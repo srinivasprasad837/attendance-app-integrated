@@ -189,10 +189,10 @@ app.post(`${apiBasePath}/attendance/backup`, checkAccessToken, (req, res) => {
 });
 
 // Serve static files from a "public" directory
-app.use('/student', express.static(path.join(__dirname, 'public')));
+app.use('/students', express.static(path.join(__dirname, 'public')));
 
 // This route serves any file under public
-app.get("/student/*", (req, res) => {
+app.get("/students/*", (req, res) => {
   res.sendFile(path.join(__dirname, 'public', req.params[0]));
 });
 
