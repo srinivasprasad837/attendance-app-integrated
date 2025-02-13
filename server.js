@@ -51,7 +51,7 @@ const checkAccessToken = (req, res, next) => {
 };
 
 // API base path
-const apiBasePath = "/api/v1/students";
+const apiBasePath = "/api/v1/student";
 
 app.post(`${apiBasePath}/attendance/date`, [checkAccessToken], (req, res) => {
   let { students } = readData();
