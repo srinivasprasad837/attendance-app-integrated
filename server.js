@@ -212,11 +212,11 @@ app.get(`${apiBasePath}/attendance/backup`, checkAccessToken, (req, res) => {
   res.json(data);
 });
 
-app.post(`${apiBasePath}/attendance/backup`, checkAccessToken, (req, res) => {
-  const backupData = req.body;
-  writeData(backupData);
-  res.status(200).send("Backup data uploaded successfully.");
-});
+// app.post(`${apiBasePath}/attendance/backup`, checkAccessToken, (req, res) => {
+//   const backupData = req.body;
+//   writeData(backupData);
+//   res.status(200).send("Backup data uploaded successfully.");
+// });
 
 // Serve static files from a "public" directory
 app.use('/student', express.static(path.join(__dirname, 'public')));
@@ -226,8 +226,9 @@ app.get("/student/*", (req, res) => {
   res.sendFile(path.join(__dirname, 'public', req.params[0]));
 });
 
+// Redirect to the student page
 app.get("/", (req, res) => {
-  res.status(200).send("server reached");
+  res.status(301).redirect("/student/");
 });
 
 app.listen(port, () => {
