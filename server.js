@@ -11,6 +11,35 @@ app.use(express.json());
 
 const dataFile = "./data.json";
 
+const sendTelegramNotification = async function (message) {
+  const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log('Telegram message sent:', data.result.text);
+    } else {
+      console.error('Error sending Telegram message:', data.description);
+    }
+  } catch (error) {
+    console.error('Error sending Telegram message:', error);
+  }
+};
+
 // Helper function to read data from the JSON file
 const readData = () => {
   try {
@@ -147,6 +176,7 @@ app.post(`${apiBasePath}/attendance`, checkAccessToken, (req, res) => {
       student.consecutiveCount = student.total % 4;
       if (student.consecutiveCount === 0) {
         student.streakOfFour++;
+        sendTelegramNotification(`Student ${student.name} (${student.id}) has a streak of four!`);
       }
       student.dates.push(date);
     }
@@ -198,48 +228,6 @@ app.get("/student/*", (req, res) => {
 
 app.get("/", (req, res) => {
   res.status(200).send("server reached");
-});
-
-// Endpoint to send a Telegram notification
-app.post('/notify', async (req, res) => {
-  const { message } = req.body;
-
-  if (!message) {
-      return res.status(400).json({ error: 'Message is required' });
-  }
-
-  const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-  const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-
-  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-      return res.status(500).json({ error: 'Telegram bot token or chat ID is missing' });
-  }
-
-  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-
-  try {
-      const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              chat_id: TELEGRAM_CHAT_ID,
-              text: message,
-          }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-          res.status(200).json({ success: true, data });
-      } else {
-          res.status(500).json({ success: false, error: data });
-      }
-  } catch (error) {
-      console.error('Error sending Telegram message:', error);
-      res.status(500).json({ success: false, error: 'Failed to send message' });
-  }
 });
 
 app.listen(port, () => {
