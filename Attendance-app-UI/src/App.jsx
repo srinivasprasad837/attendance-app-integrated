@@ -60,7 +60,7 @@ function App() {
 
       <Notification notification={notification} open={open} setOpen={setOpen} />
 
-      <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Container sx={{ mt: 4 }}>
         <NotificationContext.Provider value={{ setNotification, setOpen }}>
           <Routes>
             <Route path="/" element={<Home baseURL={config.baseURL} />} />
