@@ -84,29 +84,34 @@ const checkAccessToken = (req, res, next) => {
 
 const getAttendanceByDate = (req, res) => {
   console.log("Endpoint: POST /attendance/date");
-  let { students } = readData();
-  if (req.body.date) {
-    console.log("Date provided in request body:", req.body.date);
-    const attendanceForDate = students.filter((student) =>
-      student.dates.includes(req.body.date)
-    );
-    attendanceForDate.forEach((student) => {
-      delete student.dates;
-    });
-    if (!attendanceForDate) {
-      console.log("No attendance data found for the date.");
-      return res.status(204).send();
+  try {
+    let { students } = readData();
+    if (req.body.date) {
+      console.log("Date provided in request body:", req.body.date);
+      const attendanceForDate = students.filter((student) =>
+        student.dates.includes(req.body.date)
+      );
+      attendanceForDate.forEach((student) => {
+        delete student.dates;
+      });
+      if (!attendanceForDate) {
+        console.log("No attendance data found for the date.");
+        return res.status(204).send();
+      }
+      console.log("Attendance data found for the date:", attendanceForDate);
+      res.json(attendanceForDate);
+    } else {
+      console.log("No date provided in request body. Returning all students with limited dates.");
+      students = students.map((student) => {
+        student.dates = student.dates.slice(-4);
+        return student;
+      });
+      console.log("Returning students:", students);
+      res.json(students);
     }
-    console.log("Attendance data found for the date:", attendanceForDate);
-    res.json(attendanceForDate);
-  } else {
-    console.log("No date provided in request body. Returning all students with limited dates.");
-    students = students.map((student) => {
-      student.dates = student.dates.slice(-4);
-      return student;
-    });
-    console.log("Returning students:", students);
-    res.json(students);
+  } catch (error) {
+    console.error("Error getting attendance by date:", error);
+    return res.status(500).json({ error: "Failed to retrieve attendance data" });
   }
 };
 
@@ -140,7 +145,7 @@ const createStudent = (req, res) => {
     console.log("Student with this email or phone number already exists!");
     return res
       .status(400)
-      .send("Student with this email or phone number already exists!");
+      .json({ error: "Student with this email or phone number already exists!" });
   }
   newStudent.id =
     students.length > 0 ? Math.max(...students.map((s) => s.id)) + 1 : 1;
@@ -152,7 +157,7 @@ const createStudent = (req, res) => {
   students.push(newStudent);
   writeData({ students });
   console.log("New student added successfully.");
-  res.status(201).send();
+  res.status(201).json({ message: "Student added successfully" });
 };
 
 const updateStudent = (req, res) => {
@@ -161,7 +166,7 @@ const updateStudent = (req, res) => {
   const studentId = parseInt(req.params.id);
   console.log("Student ID:", studentId);
   const updateBody = req.body;
-   console.log("Update body:", updateBody);
+  console.log("Update body:", updateBody);
   students = students.map((student) => {
     if (student.id === studentId) {
       student.name = updateBody.name;
@@ -173,7 +178,7 @@ const updateStudent = (req, res) => {
     return student;
   });
   writeData({ students });
-  res.json(updateBody);
+  res.status(200).json({ message: "Student updated successfully" });
 };
 
 const deleteStudent = (req, res) => {
@@ -183,7 +188,7 @@ const deleteStudent = (req, res) => {
   console.log("Student ID:", studentId);
   students = students.filter((student) => student.id !== studentId);
   writeData({ students });
-  res.status(204).send();
+  res.status(200).json({ message: "Student deleted successfully" });
 };
 
 const updateAttendance = (req, res) => {
@@ -208,7 +213,7 @@ const updateAttendance = (req, res) => {
   writeData({ students });
   console.log("Attendance updated successfully.");
 
-  res.status(201).send();
+  res.status(201).json({ message: "Attendance updated successfully" });
 };
 
 const resetAttendance = (req, res) => {

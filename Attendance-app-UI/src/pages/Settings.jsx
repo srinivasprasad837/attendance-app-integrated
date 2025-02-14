@@ -6,7 +6,7 @@ import React, { useState, useRef } from "react";
     import { useContext } from "react";
 
     function Settings() {
-      const { setNotification, setOpen } = useContext(NotificationContext);
+      const { setNotification, setOpen, setSeverity } = useContext(NotificationContext);
       const [telegramBotToken, setTelegramBotToken] = useState("");
       const [telegramChatId, setTelegramChatId] = useState("");
       const [accessToken, setAccessToken] = useState("");
@@ -15,6 +15,7 @@ import React, { useState, useRef } from "react";
       const handleSaveAccessToken = () => {
         localStorage.setItem("access-token", accessToken);
         setOpen(true);
+        setSeverity("success");
         setNotification("Access token saved!");
         window.location.reload();
       };
@@ -26,6 +27,7 @@ import React, { useState, useRef } from "react";
         };
         localStorage.setItem("telegramConfig", JSON.stringify(config));
         setOpen(true);
+        setSeverity("success");
         setNotification("Telegram configuration saved!");
         window.location.reload();
       };
@@ -50,6 +52,7 @@ import React, { useState, useRef } from "react";
         } catch (error) {
           console.error("Error downloading backup:", error);
           setOpen(true);
+          setSeverity("error");
           setNotification("Error downloading backup: " + error.message);
         }
       };
@@ -71,11 +74,13 @@ import React, { useState, useRef } from "react";
               }
             );
             setOpen(true);
+            setSeverity("success");
             setNotification("Backup uploaded successfully!");
             window.location.reload();
           } catch (error) {
             console.error("Error uploading backup:", error);
             setOpen(true);
+            setSeverity("error");
             setNotification("Error uploading backup: " + error.message);
           }
         }

@@ -44,7 +44,8 @@ import React, {
     };
 
     function Manage() {
-      const { setNotification, setOpen } = useContext(NotificationContext);
+      const { setNotification, setOpen, setSeverity } =
+        useContext(NotificationContext);
       const [studentId, setStudentId] = useState("");
       const [name, setName] = useState("");
       const [email, setEmail] = useState("");
@@ -164,6 +165,7 @@ import React, {
           console.error("Error fetching students:", error);
           setNotification("Error fetching students");
           setOpen(true);
+          setSeverity("error");
         } finally {
           setIsLoading(false);
         }
@@ -175,11 +177,13 @@ import React, {
           await axios.delete(`${config.baseURL}/student/${studentId}`);
           setNotification("Student deleted successfully");
           setOpen(true);
+          setSeverity("success");
           fetchStudents();
         } catch (error) {
           console.error("Error deleting student:", error);
           setNotification("Error deleting student");
           setOpen(true);
+          setSeverity("error");
         } finally {
           setIsLoading(false);
         }
@@ -196,6 +200,7 @@ import React, {
           });
           setNotification("Student updated successfully");
           setOpen(true);
+          setSeverity("success");
           clearFields();
           fetchStudents();
           setIsEditing(false);
@@ -204,6 +209,7 @@ import React, {
           console.error("Error updating student:", error);
           setNotification("Error updating student");
           setOpen(true);
+          setSeverity("error");
         } finally {
           setIsLoading(false);
         }
@@ -212,19 +218,33 @@ import React, {
       const handleAdd = async () => {
         setIsLoading(true);
         try {
-          await axios.post(`${config.baseURL}/student`, {
+          const response = await axios.post(
+            `${config.baseURL}/student`, {
             name,
             email,
             phone,
-          });
+          }, {
+            validateStatus: function (status) {
+              return status >= 200 && status < 300; // Resolve only if the status code is in the 200s
+            }
+          }
+          );
+          if (response.status !== 201) {
+            setNotification(response.data.error || "Error adding student");
+            setOpen(true);
+            setSeverity("error");
+            return;
+          }
           setNotification("Student added successfully");
           setOpen(true);
+          setSeverity("success");
           clearFields();
           fetchStudents();
         } catch (error) {
           console.error("Error adding student:", error);
-          setNotification("Error adding student");
+          setNotification("Error adding student. Please check your network connection.");
           setOpen(true);
+          setSeverity("error");
         } finally {
           setIsLoading(false);
         }
@@ -449,5 +469,6 @@ import React, {
         </div>
       );
     }
+
 
     export default Manage;

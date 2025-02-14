@@ -31,6 +31,7 @@ const StyledLink = styled(Link)({
 function App() {
   const [notification, setNotification] = useState("");
   const [open, setOpen] = useState(false);
+  const [severity, setSeverity] = useState("success");
 
   return (
     <div style={{ background: "white" }}>
@@ -58,10 +59,17 @@ function App() {
         </Toolbar>
       </AppBar>
 
-      <Notification notification={notification} open={open} setOpen={setOpen} />
+      <Notification
+        notification={notification}
+        open={open}
+        setOpen={setOpen}
+        severity={severity}
+      />
 
       <Container sx={{ mt: 4 }}>
-        <NotificationContext.Provider value={{ setNotification, setOpen }}>
+        <NotificationContext.Provider
+          value={{ setNotification, setOpen, setSeverity }}
+        >
           <Routes>
             <Route path="/" element={<Home baseURL={config.baseURL} />} />
             <Route path="/view" element={<View baseURL={config.baseURL} />} />

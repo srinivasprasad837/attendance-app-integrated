@@ -3,7 +3,7 @@ import { Alert } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
-function Notification({ notification, open, setOpen }) {
+function Notification({ notification, open, setOpen, severity }) {
   useEffect(() => {
     if (open) {
       const timer = setTimeout(() => {
@@ -21,7 +21,7 @@ function Notification({ notification, open, setOpen }) {
   return open ? (
     <Alert
       variant="filled"
-      severity="success"
+      severity={severity}
       sx={{
         margin: 2,
         zIndex: 9999,
