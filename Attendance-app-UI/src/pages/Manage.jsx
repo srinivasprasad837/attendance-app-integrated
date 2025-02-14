@@ -212,7 +212,7 @@ import React, {
       const handleAdd = async () => {
         setIsLoading(true);
         try {
-          await axios.post(`${config.baseURL}/students`, {
+          await axios.post(`${config.baseURL}/student`, {
             name,
             email,
             phone,
