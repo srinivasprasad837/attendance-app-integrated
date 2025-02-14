@@ -119,7 +119,7 @@ import React, { useState, useRef } from "react";
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Backup and Restore
+                Backup
               </Typography>
               <Box
                 sx={{
@@ -129,7 +129,7 @@ import React, { useState, useRef } from "react";
                   maxWidth: 400,
                 }}
               >
-                <Button disabled nt="contained" component="label" sx={{width: '100%'}}>
+                {/* <Button disabled nt="contained" component="label" sx={{width: '100%'}}>
                   Upload Backup
                   <input
                     type="file"
@@ -138,7 +138,7 @@ import React, { useState, useRef } from "react";
                     onChange={handleUploadBackup}
                     ref={backupFileRef}
                   />
-                </Button>
+                </Button> */}
               </Box>
             </CardContent>
             <CardActions sx={{ justifyContent: 'flex-start'}}>
