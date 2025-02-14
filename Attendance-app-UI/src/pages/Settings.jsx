@@ -116,45 +116,6 @@ import React, { useState, useRef } from "react";
               </Button>
             </CardActions>
           </Card>
-
-          <Card sx={{ mb: 4 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Telegram Configuration
-              </Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 2,
-                  maxWidth: 400,
-                }}
-              >
-                <TextField
-                  label="Bot Token"
-                  variant="outlined"
-                  value={telegramBotToken}
-                  onChange={(e) => setTelegramBotToken(e.target.value)}
-                />
-                <TextField
-                  label="Chat ID"
-                  variant="outlined"
-                  value={telegramChatId}
-                  onChange={(e) => setTelegramChatId(e.target.value)}
-                />
-              </Box>
-            </CardContent>
-            <CardActions>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSaveTelegramConfig}
-              >
-                Save Telegram Configuration
-              </Button>
-            </CardActions>
-          </Card>
-
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>

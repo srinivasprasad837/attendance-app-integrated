@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server/server.js",
-    "start": "node server.js"
+    "start": "cd Attendance-app-UI && npm run build && cp -r dist/* ../public/ && cd .. && node server.js"
   },
   "author": "mannu",
   "license": "ISC",
