@@ -118,7 +118,7 @@ function Home() {
 
   return (
     
-      
+      <div>
         <h1>Add Attendance</h1>
         <Button
           variant="contained"
@@ -191,6 +191,7 @@ function Home() {
           </TableBody>
         </Table>
       </TableContainer>
+      </div>
       
         
           
