@@ -51,9 +51,15 @@ import React, { useState, useRef } from "react";
           URL.revokeObjectURL(url);
         } catch (error) {
           console.error("Error downloading backup:", error);
+          let errorMessage = "Error downloading backup: ";
+          if (error.response && error.response.data) {
+            errorMessage = error.response.data.error || error.response.data.message || errorMessage;
+          } else {
+            errorMessage += error.message;
+          }
           setOpen(true);
           setSeverity("error");
-          setNotification("Error downloading backup: " + error.message);
+          setNotification(errorMessage);
         }
       };
 
@@ -79,9 +85,15 @@ import React, { useState, useRef } from "react";
             window.location.reload();
           } catch (error) {
             console.error("Error uploading backup:", error);
+            let errorMessage = "Error uploading backup: ";
+            if (error.response && error.response.data) {
+              errorMessage = error.response.data.error || error.response.data.message || errorMessage;
+            } else {
+              errorMessage += error.message;
+            }
             setOpen(true);
             setSeverity("error");
-            setNotification("Error uploading backup: " + error.message);
+            setNotification(errorMessage);
           }
         }
       };

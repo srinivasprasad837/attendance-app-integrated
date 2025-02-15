@@ -55,7 +55,13 @@ function Home() {
     } catch (error) {
       // If there's an error during the API call (e.g., network error), display a generic error message
       console.error("Error fetching students:", error);
-      setNotification("Failed to fetch students. Please check your network connection.");
+      let errorMessage = "Failed to fetch students.";
+      if (error.response && error.response.data) {
+        errorMessage = error.response.data.error || error.response.data.message || errorMessage;
+      } else {
+        errorMessage += ` ${error.message}`;
+      }
+      setNotification(errorMessage);
       setOpen(true);
       setSeverity("error");
     }

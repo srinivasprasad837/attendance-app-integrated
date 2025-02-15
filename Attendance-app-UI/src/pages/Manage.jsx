@@ -163,7 +163,13 @@ import React, {
           setStudents(response.data);
         } catch (error) {
           console.error("Error fetching students:", error);
-          setNotification("Error fetching students");
+          let errorMessage = "Failed to fetch students.";
+          if (error.response && error.response.data) {
+            errorMessage = error.response.data.error || error.response.data.message || errorMessage;
+          } else {
+            errorMessage += ` ${error.message}`;
+          }
+          setNotification(errorMessage);
           setOpen(true);
           setSeverity("error");
         } finally {
@@ -181,7 +187,13 @@ import React, {
           fetchStudents();
         } catch (error) {
           console.error("Error deleting student:", error);
-          setNotification("Error deleting student");
+          let errorMessage = "Error deleting student";
+          if (error.response && error.response.data) {
+            errorMessage = error.response.data.error || error.response.data.message || errorMessage;
+          } else {
+            errorMessage += `: ${error.message}`;
+          }
+          setNotification(errorMessage);
           setOpen(true);
           setSeverity("error");
         } finally {
@@ -207,7 +219,13 @@ import React, {
           setEditStudentId("");
         } catch (error) {
           console.error("Error updating student:", error);
-          setNotification("Error updating student");
+          let errorMessage = "Error updating student";
+          if (error.response && error.response.data) {
+            errorMessage = error.response.data.error || error.response.data.message || errorMessage;
+          } else {
+            errorMessage += `: ${error.message}`;
+          }
+          setNotification(errorMessage);
           setOpen(true);
           setSeverity("error");
         } finally {
@@ -242,7 +260,13 @@ import React, {
           fetchStudents();
         } catch (error) {
           console.error("Error adding student:", error);
-          setNotification("Error adding student. Please check your network connection.");
+          let errorMessage = "Error adding student.";
+          if (error.response && error.response.data) {
+            errorMessage = error.response.data.error || error.response.data.message || errorMessage;
+          } else {
+            errorMessage += ` ${error.message}`;
+          }
+          setNotification(errorMessage);
           setOpen(true);
           setSeverity("error");
         } finally {

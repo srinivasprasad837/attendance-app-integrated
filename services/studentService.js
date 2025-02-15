@@ -60,7 +60,8 @@ const writeData = (data) => {
 };
 
 // Access token from environment variables or use a default value
-const VALID_ACCESS_TOKEN = process.env.VALID_ACCESS_TOKEN;
+// const VALID_ACCESS_TOKEN = process.env.VALID_ACCESS_TOKEN;
+const VALID_ACCESS_TOKEN = '1234567890';
 
 //if access token is not provided in environment variables, console log an error message.
 if (!VALID_ACCESS_TOKEN) {
@@ -111,7 +112,7 @@ const getAttendanceByDate = (req, res) => {
     }
   } catch (error) {
     console.error("Error getting attendance by date:", error);
-    return res.status(500).json({ error: "Failed to retrieve attendance data" });
+    return res.status(500).json({ error: "Failed to retrieve attendance data." });
   }
 };
 
@@ -143,9 +144,7 @@ const createStudent = (req, res) => {
     )
   ) {
     console.log("Student with this email or phone number already exists!");
-    return res
-      .status(400)
-      .json({ error: "Student with this email or phone number already exists!" });
+    return res.status(400).json({ error: "Student with this email or phone number already exists!" });
   }
   newStudent.id =
     students.length > 0 ? Math.max(...students.map((s) => s.id)) + 1 : 1;
@@ -227,13 +226,13 @@ const resetAttendance = (req, res) => {
     return student;
   });
   writeData({ students });
-  res.status(200).send();
+  res.status(200).json({ message: "Attendance reset successfully." });
 };
 
 const deleteAllStudents = (req, res) => {
   console.log("Endpoint: DELETE / (all students)");
   writeData({ students: [] });
-  res.status(200).send();
+  res.status(500).json({error: "Something went wrong."});
 };
 
 const getBackupData = (req, res) => {

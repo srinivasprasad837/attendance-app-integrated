@@ -1,8 +1,8 @@
 import axios from "axios";
-    const accessToken = localStorage.getItem("access-token");
 
     axios.interceptors.request.use(
       (config) => {
+        const accessToken = localStorage.getItem("access-token");
         if (accessToken) {
           config.headers["access-token"] = accessToken;
           console.log("Added access token to headers:", config.headers);

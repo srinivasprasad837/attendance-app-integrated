@@ -12,10 +12,13 @@ import React, { useState, useEffect } from "react";
     } from "@mui/material";
     import axios from "axios";
     import config from "../config";
+    import { useContext } from "react";
+    import { NotificationContext } from "../NotificationContext";
 
     const maxDate = format(new Date(), "yyyy-MM-dd");
 
     function View() {
+      const { setNotification, setOpen, setSeverity } = useContext(NotificationContext);
       const [selectedDate, setSelectedDate] = useState(new Date());
       const [students, setStudents] = useState([]);
 
@@ -35,10 +38,19 @@ import React, { useState, useEffect } from "react";
             setStudents(response.data);
           } catch (error) {
             console.error("Error fetching students:", error);
+            let errorMessage = "Failed to fetch students.";
+            if (error.response && error.response.data) {
+              errorMessage = error.response.data.error || error.response.data.message || errorMessage;
+            } else {
+              errorMessage += ` ${error.message}`;
+            }
+            setNotification(errorMessage);
+            setOpen(true);
+            setSeverity("error");
           }
         };
         fetchStudents();
-      }, [selectedDate]);
+      }, [selectedDate, setNotification, setOpen, setSeverity]);
 
       return (
         <div style={{ padding: "16px" }}>
