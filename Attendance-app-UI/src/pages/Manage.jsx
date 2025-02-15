@@ -6,9 +6,8 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import axios from "axios";
 import { format } from "date-fns";
-import config from "../config";
+import studentService from "../services/studentService";
 import {
   TextField,
   Button,
@@ -146,10 +145,8 @@ function Manage() {
   const fetchStudents = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        `${config.baseURL}/student/attendance/date`
-      );
-      setStudents(response.data);
+      const response = await studentService.getStudents();
+      setStudents(response);
     } catch (error) {
       console.error("Error fetching students:", error);
       let errorMessage = "Failed to fetch students.";
@@ -169,7 +166,7 @@ function Manage() {
   const handleDelete = async (studentId) => {
     setIsLoading(true);
     try {
-      await axios.delete(`${config.baseURL}/student/${studentId}`);
+      await studentService.deleteStudent(studentId);
       setNotification("Student deleted successfully");
       setOpen(true);
       setSeverity("success");
@@ -193,7 +190,7 @@ function Manage() {
   const handleUpdate = async (studentId) => {
     setIsLoading(true);
     try {
-      await axios.put(`${config.baseURL}/student/${studentId}`, {
+      await studentService.updateStudent(studentId, {
         name,
         email,
         phone,
@@ -225,17 +222,11 @@ function Manage() {
   const handleAdd = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        `${config.baseURL}/student`, {
+      const response = await studentService.addStudent({
         name,
         email,
         phone,
-      }, {
-        validateStatus: function (status) {
-          return status >= 200 && status < 300; // Resolve only if the status code is in the 200s
-        }
-      }
-      );
+      });
       if (response.status !== 201) {
         setNotification(response.data.error || "Error adding student");
         setOpen(true);
