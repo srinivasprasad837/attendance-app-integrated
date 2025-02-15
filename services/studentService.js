@@ -60,11 +60,11 @@ const writeData = (data) => {
 };
 
 // Access token from environment variables or use a default value
-let VALID_ACCESS_TOKEN = process.env.VALID_ACCESS_TOKEN;
+const VALID_ACCESS_TOKEN = process.env.VALID_ACCESS_TOKEN;
 
+//if access token is not provided in environment variables, console log an error message.
 if (!VALID_ACCESS_TOKEN) {
-    // If the environment variable is not set, use a default value
-    VALID_ACCESS_TOKEN = "myToken";
+  console.error("Access token is missing. Please provide a valid access token in the environment variables.");
 }
 
 const checkAccessToken = (req, res, next) => {
