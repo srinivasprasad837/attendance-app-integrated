@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { format } from "date-fns";
 import {
   TextField,
@@ -10,11 +10,9 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import axios from "axios";
-import config from "../config";
-import { useContext } from "react";
 import { NotificationContext } from "../NotificationContext";
 import "./View.css";
+import studentService from "../services/studentService";
 
 const maxDate = format(new Date(), "yyyy-MM-dd");
 
@@ -30,13 +28,9 @@ function View() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await axios.post(
-          `${config.baseURL}/student/attendance/date`,
-          {
-            date: format(selectedDate, "yyyy-MM-dd"),
-          }
-        );
-        setStudents(response.data);
+        const formattedDate = format(selectedDate, "yyyy-MM-dd");
+        const data = await studentService.getStudents(formattedDate);
+        setStudents(data);
       } catch (error) {
         console.error("Error fetching students:", error);
         let errorMessage = "Failed to fetch students.";

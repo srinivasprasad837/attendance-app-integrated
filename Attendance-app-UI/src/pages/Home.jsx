@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import { format } from "date-fns";
-import axios from "axios";
-import config from "../config";
-
 import {
   TextField,
   Button,
@@ -22,6 +19,7 @@ import {
 import { NotificationContext } from "../NotificationContext";
 import SearchIcon from "@mui/icons-material/Search";
 import "./Home.css";
+import studentService from "../services/studentService";
 
 function Home() {
   const { setNotification, setOpen, setSeverity } = useContext(
@@ -36,25 +34,9 @@ function Home() {
 
   const fetchStudents = async () => {
     try {
-      const response = await axios.post(
-        `${config.baseURL}/student/attendance/date`, {
-          validateStatus: function (status) {
-            return status >= 200 && status < 300; // Resolve only if the status code is in the 200s
-          }
-        }
-      );
-
-      if (response.status !== 200) {
-        // If the API call fails, extract the error message from the response
-        setNotification(response.data.error || "Failed to fetch students");
-        setOpen(true);
-        setSeverity("error");
-        return;
-      }
-
-      setStudents(response.data);
+      const data = await studentService.getStudents();
+      setStudents(data);
     } catch (error) {
-      // If there's an error during the API call (e.g., network error), display a generic error message
       console.error("Error fetching students:", error);
       let errorMessage = "Failed to fetch students.";
       if (error.response && error.response.data) {
@@ -113,29 +95,30 @@ function Home() {
     const today = new Date();
     const formattedDate = format(today, "yyyy-MM-dd");
 
-    const response = await axios.post(
-      `${config.baseURL}/student/attendance`,
-      { date: formattedDate, Ids: selectedStudentIds }
-    );
-    if (response.status === 201) {
+    try {
+      await studentService.markAttendance(formattedDate, selectedStudentIds);
       setOpen(true);
       setNotification("Attendance for selected students marked successfully!");
       setSeverity("success");
+      setSelectedStudentIds([]);
+      fetchStudents();
+    } catch (error) {
+      console.error("Error marking attendance:", error);
+      let errorMessage = "Failed to mark attendance.";
+      if (error.response && error.response.data) {
+        errorMessage = error.response.data.error || error.response.data.message || errorMessage;
+      } else {
+        errorMessage += ` ${error.message}`;
+      }
+      setNotification(errorMessage);
+      setOpen(true);
+      setSeverity("error");
     }
-    setSelectedStudentIds([]);
-    fetchStudents();
   };
 
   return (
-    <div className="home-container">
-      <Container
-        className="home-container-inner"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+    
+      
         <h1>Add Attendance</h1>
         <Button
           variant="contained"
@@ -146,7 +129,7 @@ function Home() {
         >
           Mark Attendance
         </Button>
-      </Container>
+      
 
       <TextField
         label="Search students..."
@@ -157,7 +140,7 @@ function Home() {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-            <SearchIcon />
+              <SearchIcon />
             </InputAdornment>
           ),
         }}
@@ -192,11 +175,11 @@ function Home() {
                 <TableCell>{student.consecutiveCount}</TableCell>
                 <TableCell>{student.streakOfFour}</TableCell>
                 <TableCell>
-                  <div style={{ display: "flex", gap: "8px" }}>
+                  
                     {student.dates
                       .map((date) => format(new Date(date), "dd/MM/yyyy"))
                       .join(", ")}
-                  </div>
+                  
                 </TableCell>
                 <TableCell>
                   {student.lastPaidDate
@@ -208,15 +191,14 @@ function Home() {
           </TableBody>
         </Table>
       </TableContainer>
-      <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
-        <Pagination
-          count={totalPages}
-          page={currentPage}
-          onChange={handlePageChange}
-          color="primary"
-        />
-      </Box>
-    </div>
+      
+        
+          
+            
+          
+        
+      
+    
   );
 }
 

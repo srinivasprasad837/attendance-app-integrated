@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import View from "./pages/View";
 import Manage from "./pages/Manage";
 import Settings from "./pages/Settings";
+import CleanManage from "./components/CleanManage";
 import { NotificationContext } from "./NotificationContext";
 import Notification from "./components/Notification";
 import axios from "./axios";
@@ -54,6 +55,7 @@ function App() {
                 <StyledLink to="/">Attendance</StyledLink>
                 <StyledLink to="/view">View Attendance</StyledLink>
                 <StyledLink to="/manage">Manage Students</StyledLink>
+                <StyledLink to="/clean-manage">Clean Manage</StyledLink>
                 <StyledLink to="/settings">Settings</StyledLink>
               </Breadcrumbs>
             </Box>
@@ -77,6 +79,10 @@ function App() {
                 <Route
                   path="/manage"
                   element={<Manage baseURL={config.baseURL} />}
+                />
+                 <Route
+                  path="/clean-manage"
+                  element={<CleanManage />}
                 />
                 <Route path="/settings" element={<Settings />} />
               </Routes>
