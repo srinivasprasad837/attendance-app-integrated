@@ -1,26 +1,27 @@
 import React, { useState, useEffect, useContext } from "react";
-    import { format } from "date-fns";
-    import axios from "axios";
-    import config from "../config";
+import { format } from "date-fns";
+import axios from "axios";
+import config from "../config";
 
-    import {
-      TextField,
-      Button,
-      Pagination,
-      Box,
-      Checkbox,
-      Table,
-      TableBody,
-      TableCell,
-      TableContainer,
-      TableHead,
-      TableRow,
-      Paper,
-      Container,
-      InputAdornment,
-    } from "@mui/material";
-    import { NotificationContext } from "../NotificationContext";
-    import SearchIcon from "@mui/icons-material/Search";
+import {
+  TextField,
+  Button,
+  Pagination,
+  Box,
+  Checkbox,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Container,
+  InputAdornment,
+} from "@mui/material";
+import { NotificationContext } from "../NotificationContext";
+import SearchIcon from "@mui/icons-material/Search";
+import "./Home.css";
 
 function Home() {
   const { setNotification, setOpen, setSeverity } = useContext(
@@ -126,8 +127,9 @@ function Home() {
   };
 
   return (
-    <div style={{ padding: "16px" }}>
+    <div className="home-container">
       <Container
+        className="home-container-inner"
         sx={{
           display: "flex",
           alignItems: "center",
@@ -218,4 +220,4 @@ function Home() {
   );
 }
 
-    export default Home;
+export default Home;

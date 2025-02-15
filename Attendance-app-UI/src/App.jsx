@@ -16,8 +16,9 @@ import {
   Box,
   Breadcrumbs,
 } from "@mui/material";
-import { styled } from "@mui/system";
+import { styled, ThemeProvider } from "@mui/material";
 import config from "./config";
+import theme from "./theme";
 
 const StyledLink = styled(Link)({
   color: "white",
@@ -34,54 +35,55 @@ function App() {
   const [severity, setSeverity] = useState("success");
 
   return (
-    <div style={{ background: "white" }}>
+    <ThemeProvider theme={theme}>
       <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            Student Management
-          </Typography>
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Breadcrumbs
-              aria-label="breadcrumb"
-              separator="|"
-              sx={{
-                "& .MuiBreadcrumbs-separator": {
-                  color: "white",
-                },
-              }}
+          <Toolbar>
+            <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+              Student Management
+            </Typography>
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <Breadcrumbs
+                aria-label="breadcrumb"
+                separator="|"
+                sx={{
+                  "& .MuiBreadcrumbs-separator": {
+                    color: "white",
+                  },
+                }}
+              >
+                <StyledLink to="/">Attendance</StyledLink>
+                <StyledLink to="/view">View Attendance</StyledLink>
+                <StyledLink to="/manage">Manage Students</StyledLink>
+                <StyledLink to="/settings">Settings</StyledLink>
+              </Breadcrumbs>
+            </Box>
+          </Toolbar>
+        </AppBar>
+        <div>
+          <Notification
+            notification={notification}
+            open={open}
+            setOpen={setOpen}
+            severity={severity}
+          />
+
+          <Container maxWidth="lg" sx={{ mt: 4, padding: { xs: 2, md: 3 } }}>
+            <NotificationContext.Provider
+              value={{ setNotification, setOpen, setSeverity }}
             >
-              <StyledLink to="/">Attendance</StyledLink>
-              <StyledLink to="/view">View Attendance</StyledLink>
-              <StyledLink to="/manage">Manage Students</StyledLink>
-              <StyledLink to="/settings">Settings</StyledLink>
-            </Breadcrumbs>
-          </Box>
-        </Toolbar>
-      </AppBar>
-
-      <Notification
-        notification={notification}
-        open={open}
-        setOpen={setOpen}
-        severity={severity}
-      />
-
-      <Container sx={{ mt: 4 }}>
-        <NotificationContext.Provider
-          value={{ setNotification, setOpen, setSeverity }}
-        >
-          <Routes>
-            <Route path="/" element={<Home baseURL={config.baseURL} />} />
-            <Route path="/view" element={<View baseURL={config.baseURL} />} />
-            <Route
-              path="/manage"
-              element={<Manage baseURL={config.baseURL} />}
-            />
-            <Route path="/settings" element={<Settings />} />
-          </Routes>
-        </NotificationContext.Provider>
-      </Container>
-    </div>
+              <Routes>
+                <Route path="/" element={<Home baseURL={config.baseURL} />} />
+                <Route path="/view" element={<View baseURL={config.baseURL} />} />
+                <Route
+                  path="/manage"
+                  element={<Manage baseURL={config.baseURL} />}
+                />
+                <Route path="/settings" element={<Settings />} />
+              </Routes>
+            </NotificationContext.Provider>
+          </Container>
+        </div>
+    </ThemeProvider>
   );
 }
 
