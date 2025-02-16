@@ -137,15 +137,15 @@ const createStudent = (req, res) => {
   const newStudent = req.body;
   console.log("New student data:", newStudent);
   let { students } = readData();
-  if (
-    students.some(
-      (student) =>
-        student.email === newStudent.email || student.phone === newStudent.phone
-    )
-  ) {
-    console.log("Student with this email or phone number already exists!");
-    return res.status(400).json({ error: "Student with this email or phone number already exists!" });
-  }
+  // if (
+  //   students.some(
+  //     (student) =>
+  //       student.email === newStudent.email || student.phone === newStudent.phone
+  //   )
+  // ) {
+  //   console.log("Student with this email or phone number already exists!");
+  //   return res.status(400).json({ error: "Student with this email or phone number already exists!" });
+  // }
   newStudent.id =
     students.length > 0 ? Math.max(...students.map((s) => s.id)) + 1 : 1;
   newStudent.total = 0;
