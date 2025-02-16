@@ -203,7 +203,7 @@ const updateAttendance = (req, res) => {
       student.consecutiveCount = student.total % 4;
       if (student.consecutiveCount === 0) {
         student.streakOfFour++;
-        sendTelegramNotification(`Student ${student.name} (${student.id}) has a streak of four!`);
+        sendTelegramNotification(`Student ${student.name} (Id:${student.id}) has a streak of four! call: ${student.phone}`);
       }
       student.dates.push(date);
     }
