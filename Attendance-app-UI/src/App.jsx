@@ -39,7 +39,7 @@ function App() {
       <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-              Student Management
+            Attendance App
             </Typography>
             <Box sx={{ display: "flex", gap: 2 }}>
               <Breadcrumbs

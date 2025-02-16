@@ -169,6 +169,7 @@ function Home() {
               <TableCell>Select</TableCell>
               <TableCell>Student Name</TableCell>
               <TableCell>Student ID</TableCell>
+              <TableCell>Class</TableCell>
               <TableCell>Total Attendance</TableCell>
               <TableCell>Consecutive classes</TableCell>
               <TableCell>Streak Of 4</TableCell>
@@ -188,6 +189,7 @@ function Home() {
                 </TableCell>
                 <TableCell>{student.name}</TableCell>
                 <TableCell>{student.id}</TableCell>
+                <TableCell>{student.selectedClass}</TableCell>
                 <TableCell>{student.total}</TableCell>
                 <TableCell>{student.consecutiveCount}</TableCell>
                 <TableCell>{student.streakOfFour}</TableCell>

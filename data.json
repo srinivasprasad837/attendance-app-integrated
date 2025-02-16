@@ -23,7 +23,8 @@
         "2025-02-03",
         "2025-02-08"
       ],
-      "lastPaidDate": "2025-02-03"
+      "lastPaidDate": "2025-02-03",
+      "selectedClass": "Guitar"
     },
     {
       "id": 3,
@@ -48,7 +49,8 @@
         "2025-02-03",
         "2025-02-08"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Saxophone"
     },
     {
       "id": 4,
@@ -70,7 +72,8 @@
         "2025-02-04",
         "2025-02-08"
       ],
-      "lastPaidDate": "2025-02-01"
+      "lastPaidDate": "2025-02-01",
+      "selectedClass": "Flute"
     },
     {
       "id": 5,
@@ -90,7 +93,8 @@
         "2025-02-04",
         "2025-02-08"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Violine"
     },
     {
       "id": 6,
@@ -103,7 +107,8 @@
       "dates": [
         "2025-02-02"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Tabla"
     },
     {
       "id": 7,
@@ -118,7 +123,8 @@
         "2025-02-02",
         "2025-02-02"
       ],
-      "lastPaidDate": "2025-02-03"
+      "lastPaidDate": "2025-02-03",
+      "selectedClass": "Drums"
     },
     {
       "id": 8,
@@ -133,7 +139,8 @@
         "2025-02-02",
         "2025-02-02"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Singing"
     },
     {
       "id": 9,
@@ -148,7 +155,8 @@
         "2025-02-02",
         "2025-02-02"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Keyboard"
     },
     {
       "id": 10,
@@ -162,7 +170,8 @@
         "2025-02-02",
         "2025-02-02"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Guitar"
     },
     {
       "id": 11,
@@ -178,7 +187,8 @@
         "2025-02-02",
         "2025-02-04"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Saxophone"
     },
     {
       "id": 12,
@@ -192,7 +202,8 @@
         "2025-02-02",
         "2025-02-04"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Flute"
     },
     {
       "id": 13,
@@ -208,7 +219,8 @@
         "2025-02-02",
         "2025-02-04"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Violine"
     },
     {
       "id": 15,
@@ -221,7 +233,8 @@
       "dates": [
         "2025-01-27"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Tabla"
     },
     {
       "id": 16,
@@ -236,7 +249,8 @@
         "2025-02-03",
         "2025-02-07"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Drums"
     },
     {
       "id": 17,
@@ -251,7 +265,8 @@
         "2025-02-03",
         "2025-02-07"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Singing"
     },
     {
       "id": 19,
@@ -265,7 +280,8 @@
         "2025-01-27",
         "2025-02-07"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Keyboard"
     },
     {
       "id": 20,
@@ -278,7 +294,8 @@
       "dates": [
         "2025-02-07"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Guitar"
     },
     {
       "name": "gdh",
@@ -291,7 +308,8 @@
       "dates": [
         "2025-02-07"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Saxophone"
     },
     {
       "name": "sheenu",
@@ -304,7 +322,8 @@
       "dates": [
         "2025-02-04"
       ],
-      "lastPaidDate": ""
+      "lastPaidDate": "",
+      "selectedClass": "Flute"
     },
     {
       "name": "neema",
@@ -318,7 +337,8 @@
         "2025-01-30",
         "2025-02-04"
       ],
-      "lastPaidDate": "2025-02-02"
+      "lastPaidDate": "2025-02-02",
+      "selectedClass": "Violine"
     }
   ]
 }

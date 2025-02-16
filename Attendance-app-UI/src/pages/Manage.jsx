@@ -23,6 +23,7 @@ import {
   Modal,
   Backdrop,
   Fade,
+  MenuItem,
 } from "@mui/material";
 
 import EditIcon from "@mui/icons-material/Edit";
@@ -38,6 +39,7 @@ function Manage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editStudentId, setEditStudentId] = useState("");
   const [students, setStudents] = useState([]);
@@ -104,6 +106,7 @@ function Manage() {
           ? format(new Date(student.lastPaidDate), "yyyy-MM-dd")
           : ""
       );
+      setSelectedClass(student.selectedClass);
     }
   };
 
@@ -114,6 +117,7 @@ function Manage() {
     setEmail("");
     setPhone("");
     setLastPaidDate("");
+    setSelectedClass("");
     setIsEditing(false);
   }, []);
 
@@ -194,6 +198,7 @@ function Manage() {
         name,
         email,
         phone,
+        selectedClass,
         lastPaidDate,
       });
       setNotification("Student updated successfully");
@@ -226,6 +231,7 @@ function Manage() {
         name,
         email,
         phone,
+        selectedClass,
       });
       if (response.status !== 201) {
         setNotification(response.data.error || "Error adding student");
@@ -303,6 +309,23 @@ function Manage() {
           onChange={(e) => setPhone(e.target.value)}
           required
         />
+        <TextField
+          select
+          label="Class"
+          value={selectedClass}
+          onChange={(e) => setSelectedClass(e.target.value)}
+          variant="outlined"
+          required
+        >
+          <MenuItem value="Violine">Violine</MenuItem>
+          <MenuItem value="Guitar">Guitar</MenuItem>
+          <MenuItem value="Flute">Flute</MenuItem>
+          <MenuItem value="Tabla">Tabla</MenuItem>
+          <MenuItem value="Drums">Drums</MenuItem>
+          <MenuItem value="Singing">Singing</MenuItem>
+          <MenuItem value="Saxophone">Saxophone</MenuItem>
+          <MenuItem value="Keyboard">Keyboard</MenuItem>
+        </TextField>
         {isEditing && (
           <>
             <Typography sx={{ margin: 0 }}>Update Paid Date</Typography>
