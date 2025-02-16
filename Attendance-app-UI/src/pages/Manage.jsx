@@ -300,7 +300,6 @@ function Manage() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          required
         />
         <TextField
           label="Phone"
