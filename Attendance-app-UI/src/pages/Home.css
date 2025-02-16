@@ -7,3 +7,20 @@
   align-items: center;
   justify-content: space-between;
 }
+
+input[type="date"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: "Roboto", sans-serif;
+  color: #333;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+input[type="date"]:focus {
+  outline: none;
+  border-color: #6200ee; /* Material Design primary color */
+  box-shadow: 0 0 4px rgba(98, 0, 238, 0.5);
+}

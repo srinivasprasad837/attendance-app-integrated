@@ -27,7 +27,12 @@ function Home() {
   const { setNotification, setOpen, setSeverity } = useContext(
     NotificationContext
   );
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   const [students, setStudents] = useState([]);
+
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
@@ -110,8 +115,7 @@ function Home() {
       return;
     }
 
-    const today = new Date();
-    const formattedDate = format(today, "yyyy-MM-dd");
+    const formattedDate = selectedDate;
 
     const response = await axios.post(
       `${config.baseURL}/student/attendance`,
@@ -137,6 +141,12 @@ function Home() {
         }}
       >
         <h1>Add Attendance</h1>
+        <input
+          type="date"
+          id="date"
+          value={selectedDate}
+          onChange={handleDateChange}
+        />
         <Button
           variant="contained"
           color="secondary"
@@ -157,7 +167,7 @@ function Home() {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-            <SearchIcon />
+              <SearchIcon />
             </InputAdornment>
           ),
         }}
