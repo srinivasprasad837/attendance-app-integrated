@@ -117,8 +117,8 @@ function Home() {
   };
 
   return (
-    
-      <div>
+    <>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <h1>Add Attendance</h1>
         <Button
           variant="contained"
@@ -129,7 +129,7 @@ function Home() {
         >
           Mark Attendance
         </Button>
-      
+      </Box>
 
       <TextField
         label="Search students..."
@@ -191,7 +191,6 @@ function Home() {
           </TableBody>
         </Table>
       </TableContainer>
-      </div>
       
         
           
@@ -199,7 +198,7 @@ function Home() {
           
         
       
-    
+    </>
   );
 }
 
