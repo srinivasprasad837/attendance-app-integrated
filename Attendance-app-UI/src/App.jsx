@@ -60,14 +60,13 @@ function App() {
           </Toolbar>
         </AppBar>
         <div>
-          <Notification
+          <Container maxWidth="lg" sx={{ mt: 4, padding: { xs: 2, md: 3 } }}>
+          <Notification 
             notification={notification}
             open={open}
             setOpen={setOpen}
             severity={severity}
           />
-
-          <Container maxWidth="lg" sx={{ mt: 4, padding: { xs: 2, md: 3 } }}>
             <NotificationContext.Provider
               value={{ setNotification, setOpen, setSeverity }}
             >
