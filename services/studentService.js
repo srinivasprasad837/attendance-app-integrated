@@ -33,8 +33,8 @@ const sendTelegramNotification = async function (message) {
 };
 
 // Access token from environment variables or use a default value
-const VALID_ACCESS_TOKEN = process.env.VALID_ACCESS_TOKEN;
-// const VALID_ACCESS_TOKEN = '1234567890';
+// const VALID_ACCESS_TOKEN = process.env.VALID_ACCESS_TOKEN;
+const VALID_ACCESS_TOKEN = '1234567890';
 
 //if access token is not provided in environment variables, console log an error message.
 if (!VALID_ACCESS_TOKEN) {
@@ -58,17 +58,26 @@ const checkAccessToken = (req, res, next) => {
 
 const getAttendanceByDate = async (req, res) => {
   console.log("Endpoint: POST /attendance/date");
+  console.log("Request body:", req.body); // Log the request body
   try {
     if (req.body.date) {
       console.log("Date provided in request body:", req.body.date);
-      const attendanceForDate = await Student.find({ dates: req.body.date });
-      attendanceForDate.forEach((student) => {
-        delete student.dates;
-      });
-      if (!attendanceForDate) {
+      const dateToSearch = req.body.date;
+      console.log("Date to search:", dateToSearch);
+      // Use $in operator to find students whose dates array contains the dateToSearch
+      const query = { dates: { $in: [dateToSearch] } };
+      console.log("Mongoose query:", query);
+      const attendanceForDate = await Student.find(query);
+      if (!attendanceForDate || attendanceForDate.length === 0) {
         console.log("No attendance data found for the date.");
-        return res.status(204).send();
+        return res.status(204).send(); // Use 204 No Content for no data found
       }
+      // Remove the 'dates' field from each student object in the response
+      const studentsToSend = attendanceForDate.map(student => {
+        const studentObject = student.toObject(); // Convert Mongoose document to plain JavaScript object
+        delete studentObject.dates;
+        return studentObject;
+      });
       console.log("Attendance data found for the date:", attendanceForDate);
       res.json(attendanceForDate);
     } else {
@@ -88,11 +97,11 @@ const getAttendanceByDate = async (req, res) => {
 };
 
 const getStudentById = async (req, res) => {
-  console.log("Endpoint: GET /:id");
+  console.log("Endpoint: GET /:_id");
   try {
-    const studentId = req.params.id;
+    const studentId = req.params._id;
     console.log("Student ID:", studentId);
-    const student = await Student.findOne({ id: studentId });
+    const student = await Student.findOne({ _id: studentId });
     if (!student) {
       console.log("Student not found");
       return res.status(404).json({ error: "Student not found" });
@@ -120,13 +129,13 @@ const createStudent = async (req, res) => {
 };
 
 const updateStudent = async (req, res) => {
-  console.log("Endpoint: PUT /:id");
+  console.log("Endpoint: PUT /:_id");
   try {
-    const studentId = req.params.id;
+    const studentId = req.params._id;
     console.log("Student ID:", studentId);
     const updateBody = req.body;
     console.log("Update body:", updateBody);
-    const updatedStudent = await Student.findOneAndUpdate({ id: studentId }, updateBody, { new: true });
+    const updatedStudent = await Student.findOneAndUpdate({ _id: studentId }, updateBody, { new: true });
     if (!updatedStudent) {
       console.log("Student not found");
       return res.status(404).json({ error: "Student not found" });
@@ -140,11 +149,11 @@ const updateStudent = async (req, res) => {
 };
 
 const deleteStudent = async (req, res) => {
-  console.log("Endpoint: DELETE /:id");
+  console.log("Endpoint: DELETE /:_id");
   try {
-    const studentId = req.params.id;
+    const studentId = req.params._id;
     console.log("Student ID:", studentId);
-    const deletedStudent = await Student.findOneAndDelete({ id: studentId });
+    const deletedStudent = await Student.findOneAndDelete({ _id: studentId });
     if (!deletedStudent) {
       console.log("Student not found");
       return res.status(404).json({ error: "Student not found" });
@@ -166,7 +175,7 @@ const updateAttendance = async (req, res) => {
 
     for (const studentId of Ids) {
       const student = await Student.findOneAndUpdate(
-        { id: studentId },
+        { _id: studentId },
         {
           $inc: { total: 1 },
           $push: { dates: date },
@@ -182,7 +191,7 @@ const updateAttendance = async (req, res) => {
       student.consecutiveCount = student.total % 4;
       if (student.consecutiveCount === 0) {
         student.streakOfFour++;
-        sendTelegramNotification(`Student ${student.name} (Id:${student.id}) has a streak of four! call: ${student.phone}`);
+        sendTelegramNotification(`Student ${student.name} (Id:${student._id}) has a streak of four! call: ${student.phone}`);
       }
       await student.save();
     }

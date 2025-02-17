@@ -15,17 +15,17 @@ router.post(
 );
 
 router.get(
-  `${apiBasePath}/:id`,
+  `${apiBasePath}/:_id`,
   [checkAccessToken],
   studentService.getStudentById
 );
 
 router.post(`${apiBasePath}`, [checkAccessToken], studentService.createStudent);
 
-router.put(`${apiBasePath}/:id`, [checkAccessToken], studentService.updateStudent);
+router.put(`${apiBasePath}/:_id`, [checkAccessToken], studentService.updateStudent);
 
 router.delete(
-  `${apiBasePath}/:id`,
+  `${apiBasePath}/:_id`,
   [checkAccessToken],
   studentService.deleteStudent
 );
