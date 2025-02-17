@@ -20,13 +20,9 @@ router.get(
   studentService.getStudentById
 );
 
-router.post(`${apiBasePath}`, [checkAccessToken], (req, res) => {
-  studentService.createStudent(req, res);
-});
+router.post(`${apiBasePath}`, [checkAccessToken], studentService.createStudent);
 
-router.put(`${apiBasePath}/:id`, [checkAccessToken], (req, res) => {
-  studentService.updateStudent(req, res);
-});
+router.put(`${apiBasePath}/:id`, [checkAccessToken], studentService.updateStudent);
 
 router.delete(
   `${apiBasePath}/:id`,
