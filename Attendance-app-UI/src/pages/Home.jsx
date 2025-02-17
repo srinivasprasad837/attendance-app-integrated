@@ -204,12 +204,13 @@ function Home() {
                 <TableCell>{student.consecutiveCount}</TableCell>
                 <TableCell>{student.streakOfFour}</TableCell>
                 <TableCell>
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    {student.dates
-                      .slice(-5)
-                      .map((date) => format(new Date(date), "dd/MM/yyyy"))
-                      .join(", ")}
-                  </div >
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    {student.dates.map((date, index) => (
+                      <div key={index} style={{ display: "block" }}>
+                        {format(new Date(date), "dd/MM/yyyy")}
+                      </div>
+                    ))}
+                  </div>
                 </TableCell>
                 <TableCell>
                   {student.lastPaidDate

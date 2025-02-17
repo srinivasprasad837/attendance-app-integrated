@@ -84,7 +84,7 @@ const getAttendanceByDate = async (req, res) => {
       console.log("No date provided in request body. Returning all students with limited dates.");
       const students = await Student.find({});
       const limitedStudents = students.map((student) => {
-        student.dates = student.dates.slice(-4);
+        student.dates = student.dates.slice(-5);
         return student;
       });
       console.log("Returning students:", limitedStudents);
