@@ -95,9 +95,9 @@ function Manage() {
   }, []);
 
   const fetchStudentDetails = (id) => {
-    const student = students.find((student) => student.id === id);
+    const student = students.find((student) => student._id === id);
     if (student) {
-      setStudentId(student.id);
+      setStudentId(student._id);
       setName(student.name);
       setEmail(student.email);
       setPhone(student.phone);
@@ -379,7 +379,7 @@ function Manage() {
       <List>
         {currentStudents.map((student) => (
           <ListItem
-            key={student.id}
+            key={student._id}
             sx={{ display: "flex", justifyContent: "center", padding: 0 }}
           >
             <Card
@@ -398,7 +398,7 @@ function Manage() {
                 color="text.secondary"
                 sx={{ marginBottom: 2 }}
               >
-                Student Id: {student.id}
+                Student Id: {student._id}
               </Typography>
               <Typography variant="h5">{student.name}</Typography>
             </CardContent>
@@ -407,7 +407,7 @@ function Manage() {
                 variant="contained"
                 startIcon={<EditIcon />}
                 size="medium"
-                onClick={() => handleEdit(student.id)}
+                onClick={() => handleEdit(student._id)}
               >
                 Edit
               </Button>
@@ -473,7 +473,7 @@ function Manage() {
                   startIcon={<DeleteIcon />}
                   size="medium"
                   onClick={() => {
-                    handleDelete(deleteStudent.id);
+                    handleDelete(deleteStudent._id);
                     handleCloseModal();
                   }}
                   color="error"

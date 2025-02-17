@@ -27,7 +27,7 @@ function Home() {
   const { setNotification, setOpen, setSeverity } = useContext(
     NotificationContext
   );
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
+  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [students, setStudents] = useState([]);
 
   const handleDateChange = (event) => {
@@ -183,31 +183,33 @@ function Home() {
               <TableCell>Total Attendance</TableCell>
               <TableCell>Consecutive classes</TableCell>
               <TableCell>Streak Of 4</TableCell>
-              <TableCell>Last 4 Classes</TableCell>
+              <TableCell>Last 5 Classes</TableCell>
               <TableCell>Last Paid</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {currentStudents.map((student) => (
-              <TableRow key={student.id}>
+              <TableRow key={student._id}>
                 <TableCell padding="checkbox">
                   <Checkbox
                     edge="end"
-                    onChange={(event) => handleSelectStudent(event, student.id)}
-                    checked={selectedStudentIds.includes(student.id)}
+                    onChange={(event) => handleSelectStudent(event, student._id)}
+                    checked={selectedStudentIds.includes(student._id)}
                   />
                 </TableCell>
                 <TableCell>{student.name}</TableCell>
-                <TableCell>{student.id}</TableCell>
+                <TableCell>{student._id}</TableCell>
                 <TableCell>{student.selectedClass}</TableCell>
                 <TableCell>{student.total}</TableCell>
                 <TableCell>{student.consecutiveCount}</TableCell>
                 <TableCell>{student.streakOfFour}</TableCell>
                 <TableCell>
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    {student.dates
-                      .map((date) => format(new Date(date), "dd/MM/yyyy"))
-                      .join(", ")}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    {student.dates.map((date, index) => (
+                      <div key={index} style={{ display: "block" }}>
+                        {format(new Date(date), "dd/MM/yyyy")}
+                      </div>
+                    ))}
                   </div>
                 </TableCell>
                 <TableCell>

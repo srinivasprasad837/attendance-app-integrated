@@ -85,9 +85,9 @@ function View() {
             <TableBody>
               {students.map((record) => {
                 return (
-                  <TableRow key={record.id}>
+                  <TableRow key={record._id}>
                     <TableCell>{record.name}</TableCell>
-                    <TableCell>{record.id}</TableCell>
+                    <TableCell>{record._id}</TableCell>
                     <TableCell>{record.total}</TableCell>
                     <TableCell>{record.consecutiveCount}</TableCell>
                     <TableCell>{record.streakOfFour}</TableCell>

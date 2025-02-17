@@ -1,5 +1,5 @@
-const fs = require("fs");
-const dataFile = "./data.json";
+const mongoose = require('mongoose');
+const Student = require('../models/student');
 
 const sendTelegramNotification = async function (message) {
   console.log("Function: sendTelegramNotification");
@@ -32,33 +32,6 @@ const sendTelegramNotification = async function (message) {
   }
 };
 
-// Helper function to read data from the JSON file
-const readData = () => {
-  console.log("Function: readData");
-  try {
-    if (!fs.existsSync(dataFile)) {
-      console.log("Data file does not exist. Creating a new one.");
-      fs.writeFileSync(dataFile, JSON.stringify({ students: [] }, null, 2));
-    }
-    const rawData = fs.readFileSync(dataFile, "utf-8");
-    console.log("Raw data read from file:", rawData);
-    const parsedData = JSON.parse(rawData);
-    console.log("Parsed data:", parsedData);
-    return parsedData;
-  } catch (error) {
-    // If the file doesn't exist or is invalid, return default data
-    console.error("Error reading data.json:", error);
-    return { students: [] };
-  }
-};
-
-// Helper function to write data to the JSON file
-const writeData = (data) => {
-  console.log("Function: writeData");
-  console.log("Data to write:", data);
-  fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
-};
-
 // Access token from environment variables or use a default value
 const VALID_ACCESS_TOKEN = process.env.VALID_ACCESS_TOKEN;
 // const VALID_ACCESS_TOKEN = '1234567890';
@@ -83,32 +56,39 @@ const checkAccessToken = (req, res, next) => {
   next();
 };
 
-const getAttendanceByDate = (req, res) => {
+const getAttendanceByDate = async (req, res) => {
   console.log("Endpoint: POST /attendance/date");
+  console.log("Request body:", req.body); // Log the request body
   try {
-    let { students } = readData();
     if (req.body.date) {
       console.log("Date provided in request body:", req.body.date);
-      const attendanceForDate = students.filter((student) =>
-        student.dates.includes(req.body.date)
-      );
-      attendanceForDate.forEach((student) => {
-        delete student.dates;
-      });
-      if (!attendanceForDate) {
+      const dateToSearch = req.body.date;
+      console.log("Date to search:", dateToSearch);
+      // Use $in operator to find students whose dates array contains the dateToSearch
+      const query = { dates: { $in: [dateToSearch] } };
+      console.log("Mongoose query:", query);
+      const attendanceForDate = await Student.find(query);
+      if (!attendanceForDate || attendanceForDate.length === 0) {
         console.log("No attendance data found for the date.");
-        return res.status(204).send();
+        return res.status(204).send(); // Use 204 No Content for no data found
       }
+      // Remove the 'dates' field from each student object in the response
+      const studentsToSend = attendanceForDate.map(student => {
+        const studentObject = student.toObject(); // Convert Mongoose document to plain JavaScript object
+        delete studentObject.dates;
+        return studentObject;
+      });
       console.log("Attendance data found for the date:", attendanceForDate);
       res.json(attendanceForDate);
     } else {
       console.log("No date provided in request body. Returning all students with limited dates.");
-      students = students.map((student) => {
-        student.dates = student.dates.slice(-4);
+      const students = await Student.find({});
+      const limitedStudents = students.map((student) => {
+        student.dates = student.dates.slice(-5);
         return student;
       });
-      console.log("Returning students:", students);
-      res.json(students);
+      console.log("Returning students:", limitedStudents);
+      res.json(limitedStudents);
     }
   } catch (error) {
     console.error("Error getting attendance by date:", error);
@@ -116,137 +96,157 @@ const getAttendanceByDate = (req, res) => {
   }
 };
 
-const getStudentById = (req, res) => {
-  console.log("Endpoint: GET /:id");
-  let { students } = readData();
-  const studentId = parseInt(req.params.id);
-  console.log("Student ID:", studentId);
-  const studentData = students.find((student) => student.id === studentId);
-  const student = {
-    id: studentData.id,
-    name: studentData.name,
-    email: studentData.email,
-    phone: studentData.phone,
-  };
-  console.log("Student data:", student);
-  res.json(student);
-};
-
-const createStudent = (req, res) => {
-  console.log("Endpoint: POST /");
-  const newStudent = req.body;
-  console.log("New student data:", newStudent);
-  let { students } = readData();
-  // if (
-  //   students.some(
-  //     (student) =>
-  //       student.email === newStudent.email || student.phone === newStudent.phone
-  //   )
-  // ) {
-  //   console.log("Student with this email or phone number already exists!");
-  //   return res.status(400).json({ error: "Student with this email or phone number already exists!" });
-  // }
-  newStudent.id =
-    students.length > 0 ? Math.max(...students.map((s) => s.id)) + 1 : 1;
-  newStudent.total = 0;
-  newStudent.consecutiveCount = 0;
-  newStudent.streakOfFour = 0;
-  newStudent.dates = [];
-  newStudent.paidDates = "";
-  students.push(newStudent);
-  writeData({ students });
-  console.log("New student added successfully.");
-  res.status(201).json({ message: "Student added successfully" });
-};
-
-const updateStudent = (req, res) => {
-  console.log("Endpoint: PUT /:id");
-  let { students } = readData();
-  const studentId = parseInt(req.params.id);
-  console.log("Student ID:", studentId);
-  const updateBody = req.body;
-  console.log("Update body:", updateBody);
-  students = students.map((student) => {
-    if (student.id === studentId) {
-      student.name = updateBody.name;
-      student.email = updateBody.email;
-      student.phone = updateBody.phone;
-      if (updateBody.lastPaidDate !== student.lastPaidDate)
-        student.lastPaidDate = updateBody.lastPaidDate;
+const getStudentById = async (req, res) => {
+  console.log("Endpoint: GET /:_id");
+  try {
+    const studentId = req.params._id;
+    console.log("Student ID:", studentId);
+    const student = await Student.findOne({ _id: studentId });
+    if (!student) {
+      console.log("Student not found");
+      return res.status(404).json({ error: "Student not found" });
     }
-    return student;
-  });
-  writeData({ students });
-  res.status(200).json({ message: "Student updated successfully" });
+    console.log("Student data:", student);
+    res.json(student);
+  } catch (error) {
+    console.error("Error getting student by ID:", error);
+    return res.status(500).json({ error: "Failed to retrieve student data." });
+  }
 };
 
-const deleteStudent = (req, res) => {
-  console.log("Endpoint: DELETE /:id");
-  let { students } = readData();
-  const studentId = parseInt(req.params.id);
-  console.log("Student ID:", studentId);
-  students = students.filter((student) => student.id !== studentId);
-  writeData({ students });
-  res.status(200).json({ message: "Student deleted successfully" });
+const createStudent = async (req, res) => {
+  console.log("Endpoint: POST /");
+  try {
+    const newStudent = req.body;
+    console.log("New student data:", newStudent);
+    const createdStudent = await Student.create(newStudent);
+    console.log("New student added successfully.");
+    res.status(201).json({ message: "Student added successfully", student: createdStudent });
+  } catch (error) {
+    console.error("Error creating student:", error);
+    return res.status(500).json({ error: "Failed to create student." });
+  }
 };
 
-const updateAttendance = (req, res) => {
+const updateStudent = async (req, res) => {
+  console.log("Endpoint: PUT /:_id");
+  try {
+    const studentId = req.params._id;
+    console.log("Student ID:", studentId);
+    const updateBody = req.body;
+    console.log("Update body:", updateBody);
+    const updatedStudent = await Student.findOneAndUpdate({ _id: studentId }, updateBody, { new: true });
+    if (!updatedStudent) {
+      console.log("Student not found");
+      return res.status(404).json({ error: "Student not found" });
+    }
+    console.log("Student updated successfully");
+    res.status(200).json({ message: "Student updated successfully", student: updatedStudent });
+  } catch (error) {
+    console.error("Error updating student:", error);
+    return res.status(500).json({ error: "Failed to update student." });
+  }
+};
+
+const deleteStudent = async (req, res) => {
+  console.log("Endpoint: DELETE /:_id");
+  try {
+    const studentId = req.params._id;
+    console.log("Student ID:", studentId);
+    const deletedStudent = await Student.findOneAndDelete({ _id: studentId });
+    if (!deletedStudent) {
+      console.log("Student not found");
+      return res.status(404).json({ error: "Student not found" });
+    }
+    console.log("Student deleted successfully");
+    res.status(200).json({ message: "Student deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting student:", error);
+    return res.status(500).json({ error: "Failed to delete student." });
+  }
+};
+
+const updateAttendance = async (req, res) => {
   console.log("Endpoint: POST /attendance");
-  let { date, Ids } = req.body;
-  console.log("Date:", date);
-  console.log("IDs:", Ids);
-  let { students } = readData();
+  try {
+    const { date, Ids } = req.body;
+    console.log("Date:", date);
+    console.log("IDs:", Ids);
 
-  students = students.map((student) => {
-    if (Ids.includes(student.id)) {
-      student.total++;
+    for (const studentId of Ids) {
+      const student = await Student.findOneAndUpdate(
+        { _id: studentId },
+        {
+          $inc: { total: 1 },
+          $push: { dates: date },
+        },
+        { new: true }
+      );
+
+      if (!student) {
+        console.log(`Student with ID ${studentId} not found`);
+        return res.status(404).json({ error: `Student with ID ${studentId} not found` });
+      }
+
       student.consecutiveCount = student.total % 4;
       if (student.consecutiveCount === 0) {
         student.streakOfFour++;
-        sendTelegramNotification(`Student ${student.name} (Id:${student.id}) has a streak of four! call: ${student.phone}`);
+        sendTelegramNotification(`Student ${student.name} (Id:${student._id}) has a streak of four! call: ${student.phone}`);
       }
-      student.dates.push(date);
+      await student.save();
     }
-    return student;
-  });
 
-  writeData({ students });
-  console.log("Attendance updated successfully.");
-
-  res.status(201).json({ message: "Attendance updated successfully" });
+    console.log("Attendance updated successfully.");
+    res.status(201).json({ message: "Attendance updated successfully" });
+  } catch (error) {
+    console.error("Error updating attendance:", error);
+    return res.status(500).json({ error: "Failed to update attendance." });
+  }
 };
 
-const resetAttendance = (req, res) => {
+const resetAttendance = async (req, res) => {
   console.log("Endpoint: DELETE /attendance");
-  students = readData();
-  students = students.map((student) => {
-    student.total = 0;
-    student.consecutiveCount = 0;
-    student.streakOfFour = 0;
-    student.dates = [];
-    return student;
-  });
-  writeData({ students });
-  res.status(200).json({ message: "Attendance reset successfully." });
+  try {
+    await Student.updateMany({}, {
+      total: 0,
+      consecutiveCount: 0,
+      streakOfFour: 0,
+      dates: [],
+    });
+    console.log("Attendance reset successfully.");
+    res.status(200).json({ message: "Attendance reset successfully." });
+  } catch (error) {
+    console.error("Error resetting attendance:", error);
+    return res.status(500).json({ error: "Failed to reset attendance." });
+  }
 };
 
-const deleteAllStudents = (req, res) => {
+const deleteAllStudents = async (req, res) => {
   console.log("Endpoint: DELETE / (all students)");
-  writeData({ students: [] });
-  res.status(500).json({error: "Something went wrong."});
+  try {
+    await Student.deleteMany({});
+    console.log("All students deleted successfully.");
+    res.status(200).json({ message: "All students deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting all students:", error);
+    res.status(500).json({ error: "Failed to delete all students." });
+  }
 };
 
-const getBackupData = (req, res) => {
+const getBackupData = async (req, res) => {
   console.log("Endpoint: GET /attendance/backup");
-  const data = readData();
-  console.log("Backup data:", data);
-  res.json(data);
+  try {
+    const data = await Student.find({});
+    console.log("Backup data:", data);
+    res.json(data);
+  } catch (error) {
+    console.error("Error getting backup data:", error);
+    return res.status(500).json({ error: "Failed to retrieve backup data." });
+  }
 };
 
 module.exports = {
   sendTelegramNotification,
-  readData,
-  writeData,
   checkAccessToken,
   getAttendanceByDate,
   getStudentById,

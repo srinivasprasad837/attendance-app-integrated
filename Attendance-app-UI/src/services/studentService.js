@@ -28,18 +28,18 @@ const addStudent = async (student) => {
   }
 };
 
-const updateStudent = async (id, student) => {
+const updateStudent = async (_id, student) => {
   try {
-    const response = await axios.put(`${config.baseURL}/student/${id}`, student);
+    const response = await axios.put(`${config.baseURL}/student/${_id}`, student);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-const deleteStudent = async (id) => {
+const deleteStudent = async (_id) => {
   try {
-    await axios.delete(`${config.baseURL}/student/${id}`);
+    await axios.delete(`${config.baseURL}/student/${_id}`);
   } catch (error) {
     throw error;
   }
