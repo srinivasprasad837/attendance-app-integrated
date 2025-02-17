@@ -30,10 +30,10 @@ nav ul li a {
   color: blue;
 }
 
-@media (max-width: 600px) {
+/* @media (max-width: 600px) {
   #root {
     padding: 0.5rem;
-  }
+  } */
 
   nav ul {
     flex-direction: column;
