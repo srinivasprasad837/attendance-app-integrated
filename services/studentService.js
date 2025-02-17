@@ -92,7 +92,7 @@ const getStudentById = async (req, res) => {
   try {
     const studentId = req.params.id;
     console.log("Student ID:", studentId);
-    const student = await Student.findById(studentId);
+    const student = await Student.findOne({ id: studentId });
     if (!student) {
       console.log("Student not found");
       return res.status(404).json({ error: "Student not found" });
@@ -126,7 +126,7 @@ const updateStudent = async (req, res) => {
     console.log("Student ID:", studentId);
     const updateBody = req.body;
     console.log("Update body:", updateBody);
-    const updatedStudent = await Student.findByIdAndUpdate(studentId, updateBody, { new: true });
+    const updatedStudent = await Student.findOneAndUpdate({ id: studentId }, updateBody, { new: true });
     if (!updatedStudent) {
       console.log("Student not found");
       return res.status(404).json({ error: "Student not found" });
@@ -144,7 +144,7 @@ const deleteStudent = async (req, res) => {
   try {
     const studentId = req.params.id;
     console.log("Student ID:", studentId);
-    const deletedStudent = await Student.findByIdAndDelete(studentId);
+    const deletedStudent = await Student.findOneAndDelete({ id: studentId });
     if (!deletedStudent) {
       console.log("Student not found");
       return res.status(404).json({ error: "Student not found" });
@@ -165,8 +165,8 @@ const updateAttendance = async (req, res) => {
     console.log("IDs:", Ids);
 
     for (const studentId of Ids) {
-      const student = await Student.findByIdAndUpdate(
-        studentId,
+      const student = await Student.findOneAndUpdate(
+        { id: studentId },
         {
           $inc: { total: 1 },
           $push: { dates: date },
