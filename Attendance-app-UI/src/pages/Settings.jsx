@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback, useContext } from "react";
 import { TextField, Button, Box, Typography, Card, CardContent, CardActions, List, ListItem, IconButton } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import DownloadIcon from '@mui/icons-material/Download';
+import AddIcon from '@mui/icons-material/Add';
 import { NotificationContext } from "../NotificationContext";
 import settingsService from "../services/settingsService";
 import "./Settings.css";
@@ -182,6 +185,7 @@ function Settings() {
             variant="contained"
             color="primary"
             onClick={handleSaveAccessToken}
+            startIcon={<SaveIcon />}
           >
             Save Token
           </Button>
@@ -216,7 +220,9 @@ function Settings() {
           <Button
             variant="contained"
             color="primary"
-            onClick={handleDownloadBackup}>
+            onClick={handleDownloadBackup}
+            startIcon={<DownloadIcon />}
+          >
             Download Backup
           </Button>
         </CardActions>
@@ -245,6 +251,7 @@ function Settings() {
               variant="contained"
               color="primary"
               onClick={handleAddOption}
+              startIcon={<AddIcon />}
             >
               Add Option
             </Button>
