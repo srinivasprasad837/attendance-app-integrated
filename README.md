@@ -54,4 +54,7 @@ VALID_ACCESS_TOKEN=your_valid_access_token_here
 ```
 
 **Note:**  Replace the placeholder values with your actual values.
+
+To seed the database with initial data, run `node seed.js` after adding your MongoDB connection URL to the `.env` file.
+
 # attendance-app-integrated
