@@ -39,7 +39,7 @@ function App() {
       <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            Attendance App<SchoolRounded/>
+            <StyledLink to="/">Attendance App<SchoolRounded/></StyledLink>
             </Typography>
             <Box sx={{ display: "flex", gap: 2 }}>
               <Breadcrumbs
@@ -51,7 +51,7 @@ function App() {
                   },
                 }}
               >
-                <StyledLink to="/">Attendance</StyledLink>
+                <StyledLink to="/">Home</StyledLink>
                 <StyledLink to="/view">View Attendance</StyledLink>
                 <StyledLink to="/manage">Manage Students</StyledLink>
                 <StyledLink to="/settings">Settings</StyledLink>
