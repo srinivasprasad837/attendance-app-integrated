@@ -6,7 +6,7 @@ import Manage from "./pages/Manage";
 import Settings from "./pages/Settings";
 import { NotificationContext } from "./NotificationContext";
 import Notification from "./components/Notification";
-import axios from "./axios";
+import SchoolRounded from '@mui/icons-material/SchoolRounded';
 
 import {
   AppBar,
@@ -39,7 +39,7 @@ function App() {
       <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            Attendance App
+            Attendance App<SchoolRounded/>
             </Typography>
             <Box sx={{ display: "flex", gap: 2 }}>
               <Breadcrumbs
