@@ -1,9 +1,8 @@
-import React, { useState, useRef } from "react";
-import { TextField, Button, Box, Typography, Card, CardContent, CardActions } from "@mui/material";
-import axios from "../axios";
-import config from "../config";
+import React, { useState, useRef, useEffect, useCallback, useContext } from "react";
+import { TextField, Button, Box, Typography, Card, CardContent, CardActions, List, ListItem, IconButton } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 import { NotificationContext } from "../NotificationContext";
-import { useContext } from "react";
+import settingsService from "../services/settingsService";
 import "./Settings.css";
 
 function Settings() {
@@ -11,7 +10,25 @@ function Settings() {
   const [telegramBotToken, setTelegramBotToken] = useState("");
   const [telegramChatId, setTelegramChatId] = useState("");
   const [accessToken, setAccessToken] = useState("");
-  const backupFileRef = useRef(null);
+  const [backupFileRef] = useState(useRef(null));
+  const [newOption, setNewOption] = useState("");
+  const [dropdownOptions, setDropdownOptions] = useState([]);
+
+  useEffect(() => {
+    fetchDropdownOptions();
+  }, []);
+
+  const fetchDropdownOptions = async () => {
+    try {
+      const response = await settingsService.getDropdownOptions()
+      setDropdownOptions(response);
+    } catch (error) {
+      console.error("Error fetching dropdown options:", error);
+      setNotification("Failed to load dropdown options");
+      setOpen(true);
+      setSeverity("error");
+    }
+  };
 
   const handleSaveAccessToken = () => {
     localStorage.setItem("access-token", accessToken);
@@ -57,7 +74,7 @@ function Settings() {
         errorMessage = error.response.data.error || error.response.data.message || errorMessage;
       } else {
         errorMessage += error.message;
-      }
+        }
       setOpen(true);
       setSeverity("error");
       setNotification(errorMessage);
@@ -98,6 +115,42 @@ function Settings() {
       }
     }
   };
+
+  const handleAddOption = async () => {
+    if (newOption.trim() !== "") {
+      try {
+        await settingsService.addDropdownOption(newOption.trim());
+        const updatedOptions = await settingsService.getDropdownOptions();
+        setDropdownOptions(updatedOptions);
+        setNewOption("");
+        setNotification("Dropdown option added successfully");
+        setOpen(true);
+        setSeverity("success");
+      } catch (error) {
+        console.error("Error adding dropdown option:", error);
+        setNotification("Failed to add dropdown option");
+        setOpen(true);
+        setSeverity("error");
+       }
+    }
+  };
+
+  const handleDeleteOption = async (optionToDelete) => {
+    try {
+      await settingsService.deleteDropdownOption(optionToDelete);
+      const updatedOptions = await settingsService.getDropdownOptions();
+      setDropdownOptions(updatedOptions);
+      setNotification("Dropdown option deleted successfully");
+      setOpen(true);
+      setSeverity("success");
+    } catch (error) {
+      console.error("Error deleting dropdown option:", error);
+      setNotification("Failed to delete dropdown option");
+      setOpen(true);
+      setSeverity("error");
+    }
+  }
+
 
   return (
     <div className="settings-container">
@@ -168,8 +221,52 @@ function Settings() {
           </Button>
         </CardActions>
       </Card>
+
+      <Card sx={{ mt: 4 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Manage Dropdown class Options
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              maxWidth: 400,
+            }}
+          >
+            <TextField
+              label="New Option"
+              variant="outlined"
+              value={newOption}
+              onChange={(e) => setNewOption(e.target.value)}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddOption}
+            >
+              Add Option
+            </Button>
+            <List>
+              {dropdownOptions.map((option, index) => (
+                <ListItem
+                  key={index}
+                  secondaryAction={
+                    <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteOption(option)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
+                >
+                  {option}
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </CardContent>
+      </Card>
     </div>
   );
 }
 
-    export default Settings;
+export default Settings;

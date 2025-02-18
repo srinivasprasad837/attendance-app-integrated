@@ -31,6 +31,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 import { NotificationContext } from "../NotificationContext";
 import "./Manage.css";
+import settingsService from "../services/settingsService";
 
 function Manage() {
   const { setNotification, setOpen, setSeverity } =
@@ -49,12 +50,14 @@ function Manage() {
   const [isLoading, setIsLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteStudent, setDeleteStudent] = useState(null);
+  const [dropdownOptions, setDropdownOptions] = useState([]); // Add dropdownOptions state
   const studentsPerPage = 5;
 
   const formRef = useRef(null);
   const maxDate = new Date();
 
   useEffect(() => {
+    fetchDropdownOptions();
     fetchStudents();
   }, []);
 
@@ -64,6 +67,19 @@ function Manage() {
       setEditStudentId("");
     }
   }, [name, email, phone, lastPaidDate]);
+
+
+  const fetchDropdownOptions = async () => {
+    try {
+      const response = await settingsService.getDropdownOptions();
+      setDropdownOptions(response);
+    } catch (error) {
+      console.error("Error fetching dropdown options:", error);
+      setNotification("Failed to load dropdown options");
+      setOpen(true);
+      setSeverity("error");
+    }
+  };
 
   useEffect(() => {
     if (editStudentId) {
@@ -316,14 +332,9 @@ function Manage() {
           variant="outlined"
           required
         >
-          <MenuItem value="Violine">Violine</MenuItem>
-          <MenuItem value="Guitar">Guitar</MenuItem>
-          <MenuItem value="Flute">Flute</MenuItem>
-          <MenuItem value="Tabla">Tabla</MenuItem>
-          <MenuItem value="Drums">Drums</MenuItem>
-          <MenuItem value="Singing">Singing</MenuItem>
-          <MenuItem value="Saxophone">Saxophone</MenuItem>
-          <MenuItem value="Keyboard">Keyboard</MenuItem>
+          {dropdownOptions.map((option, index) => (
+            <MenuItem key={index} value={option}>{option}</MenuItem>
+          ))}
         </TextField>
         {isEditing && (
           <>
