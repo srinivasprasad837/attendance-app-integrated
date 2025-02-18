@@ -23,10 +23,12 @@ const addDropdownOption = async (option) => {
       // If no settings document exists, create a new one
       setting = new Setting({ dropdownOptions: [option] });
     } else {
+      if (setting.dropdownOptions.includes(option)) {
+        throw error("Option already exists");
+      }
       // Otherwise, add the new option to the existing array
       setting.dropdownOptions.push(option);
     }
-
     await setting.save();
   } catch (error) {
     console.error("Error adding dropdown option:", error);
@@ -40,7 +42,7 @@ const deleteDropdownOption = async (option) => {
     if (!setting) {
       throw new Error('Settings not found');
     }
-    
+
     setting.dropdownOptions = setting.dropdownOptions.filter(value => value !== option)
     await setting.save();
   } catch (error) {
