@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path"); // Import the path module
 const studentRoutes = require("./routers/student");
+const settingsRouter =require("./routers/settings");
 
 dotenv.config();
 
@@ -35,6 +36,8 @@ app.get("/", (req, res) => {
 
 // Use the student routes
 app.use(studentRoutes);
+// Use the settings routes
+app.use(settingsRouter);
 
 app.listen(port, () => {
   console.log("App listening on port:", port);
