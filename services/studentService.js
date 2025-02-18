@@ -119,6 +119,13 @@ const createStudent = async (req, res) => {
   try {
     const newStudent = req.body;
     console.log("New student data:", newStudent);
+
+    // Fetch the last student to get the last ID
+    const lastStudent = await Student.findOne().sort({ _id: -1 });
+    const nextStudentId = (lastStudent?._id || 0) + 1;
+    newStudent._id = nextStudentId;
+
+
     const createdStudent = await Student.create(newStudent);
     console.log("New student added successfully.");
     res.status(201).json({ message: "Student added successfully", student: createdStudent });
