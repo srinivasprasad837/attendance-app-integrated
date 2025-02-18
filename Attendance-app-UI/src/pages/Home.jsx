@@ -149,7 +149,7 @@ function Home() {
         />
         <Button
           variant="contained"
-          color="secondary"
+          color="primary"
           onClick={handleMarkAttendance}
           disabled={selectedStudentIds.length === 0}
           size="medium"
