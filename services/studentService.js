@@ -78,7 +78,7 @@ const getAttendanceByDate = async (req, res) => {
         delete studentObject.dates;
         return studentObject;
       });
-      console.log("Attendance data found for the date:", attendanceForDate);
+      // console.log("Attendance data found for the date:", attendanceForDate);
       res.json(attendanceForDate);
     } else {
       console.log("No date provided in request body. Returning all students with limited dates.");
@@ -87,7 +87,7 @@ const getAttendanceByDate = async (req, res) => {
         student.dates = student.dates.slice(-5);
         return student;
       });
-      console.log("Returning students:", limitedStudents);
+      // console.log("Returning students:", limitedStudents);
       res.json(limitedStudents);
     }
   } catch (error) {
@@ -244,7 +244,7 @@ const getBackupData = async (req, res) => {
   console.log("Endpoint: GET /attendance/backup");
   try {
     const data = await Student.find({});
-    console.log("Backup data:", data);
+    // console.log("Backup data:", data);
     res.json(data);
   } catch (error) {
     console.error("Error getting backup data:", error);
