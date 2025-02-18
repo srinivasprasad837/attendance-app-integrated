@@ -225,7 +225,7 @@ function Settings() {
       <Card sx={{ mt: 4 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            Manage Dropdown class Options
+            Manage Dropdown class
           </Typography>
           <Box
             sx={{
