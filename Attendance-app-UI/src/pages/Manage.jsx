@@ -30,12 +30,14 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import { NotificationContext } from "../NotificationContext";
+import useErrorHandler from "../hooks/useErrorHandler";
 import "./Manage.css";
 import settingsService from "../services/settingsService";
 
 function Manage() {
   const { showNotification } =
     useContext(NotificationContext);
+  const { handleError } = useErrorHandler();
   const [studentId, setStudentId] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -50,7 +52,7 @@ function Manage() {
   const [isLoading, setIsLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteStudent, setDeleteStudent] = useState(null);
-  const [dropdownOptions, setDropdownOptions] = useState([]); // Add dropdownOptions state
+  const [dropdownOptions, setDropdownOptions] = useState([]);
   const studentsPerPage = 5;
 
   const formRef = useRef(null);
@@ -74,8 +76,7 @@ function Manage() {
       const response = await settingsService.getDropdownOptions();
       setDropdownOptions(response);
     } catch (error) {
-      console.error("Error fetching dropdown options:", error);
-      showNotification("Failed to load dropdown options", "error");
+      handleError(error);
     }
   };
 
@@ -166,14 +167,7 @@ function Manage() {
       const response = await studentService.getStudents();
       setStudents(response);
     } catch (error) {
-      console.error("Error fetching students:", error);
-      let errorMessage = "Failed to fetch students.";
-      if (error.response && error.response.data) {
-        errorMessage = error.response.data.error || error.response.data.message || errorMessage;
-      } else {
-        errorMessage += ` ${error.message}`;
-      }
-      showNotification(errorMessage, "error");
+      handleError(error);
     } finally {
       setIsLoading(false);
     }
@@ -186,14 +180,7 @@ function Manage() {
       showNotification("Student deleted successfully", "success");
       fetchStudents();
     } catch (error) {
-      console.error("Error deleting student:", error);
-      let errorMessage = "Error deleting student";
-      if (error.response && error.response.data) {
-        errorMessage = error.response.data.error || error.response.data.message || errorMessage;
-      } else {
-        errorMessage += `: ${error.message}`;
-      }
-      showNotification(errorMessage, "error");
+      handleError(error);
     } finally {
       setIsLoading(false);
     }
@@ -215,14 +202,7 @@ function Manage() {
       setIsEditing(false);
       setEditStudentId("");
     } catch (error) {
-      console.error("Error updating student:", error);
-      let errorMessage = "Error updating student";
-      if (error.response && error.response.data) {
-        errorMessage = error.response.data.error || error.response.data.message || errorMessage;
-      } else {
-        errorMessage += `: ${error.message}`;
-      }
-      showNotification(errorMessage, "error");
+      handleError(error);
     } finally {
       setIsLoading(false);
     }
@@ -245,14 +225,7 @@ function Manage() {
       clearFields();
       fetchStudents();
     } catch (error) {
-      console.error("Error adding student:", error);
-      let errorMessage = "Error adding student.";
-      if (error.response && error.response.data) {
-        errorMessage = error.response.data.error || error.response.data.message || errorMessage;
-      } else {
-        errorMessage += ` ${error.message}`;
-      }
-      showNotification(errorMessage, "error");
+      handleError(error);
     } finally {
       setIsLoading(false);
     }

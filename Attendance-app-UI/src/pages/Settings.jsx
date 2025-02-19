@@ -1,20 +1,19 @@
-import React, { useState, useRef, useEffect, useCallback, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { TextField, Button, Box, Typography, Card, CardContent, CardActions, List, ListItem, IconButton, CircularProgress } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import DownloadIcon from '@mui/icons-material/Download';
 import AddIcon from '@mui/icons-material/Add';
 import { NotificationContext } from "../NotificationContext";
+import useErrorHandler from "../hooks/useErrorHandler";
 import settingsService from "../services/settingsService";
 import "./Settings.css";
 
 function Settings() {
   const { showNotification } = useContext(NotificationContext);
+  const { handleError } = useErrorHandler();
   const [isLoading, setIsLoading] = useState(false);
-  const [telegramBotToken, setTelegramBotToken] = useState("");
-  const [telegramChatId, setTelegramChatId] = useState("");
   const [accessToken, setAccessToken] = useState("");
-  const [backupFileRef] = useState(useRef(null));
   const [newOption, setNewOption] = useState("");
   const [dropdownOptions, setDropdownOptions] = useState([]);
 
@@ -27,30 +26,13 @@ function Settings() {
     try {
       const response = await settingsService.getDropdownOptions()
       setDropdownOptions(response);
-    } catch (error) {
-      console.error("Error fetching dropdown options:", error);
-      showNotification("Failed to load dropdown options", "error");
-    } finally {
-      setIsLoading(false)
+      } catch (error) {
+        handleError(error);
+      } finally {
+        setIsLoading(false);
+      }
     }
-  };
-
-  const handleSaveAccessToken = () => {
-    localStorage.setItem("access-token", accessToken);
-    showNotification("Access token saved!", "success");
-    window.location.reload();
-  };
-
-  const handleSaveTelegramConfig = () => {
-    const config = {
-      botToken: telegramBotToken,
-      chatId: telegramChatId,
-    };
-    localStorage.setItem("telegramConfig", JSON.stringify(config));
-    showNotification("Telegram configuration saved!", "success");
-    window.location.reload();
-  };
-
+  
   const handleDownloadBackup = async () => {
     try {
       const response = await settingsService.downloadBackup();
@@ -64,39 +46,9 @@ function Settings() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error downloading backup:", error);
-      let errorMessage = "Error downloading backup: ";
-      if (error.response && error.response.data) {
-        errorMessage = error.response.data.error || error.response.data.message || errorMessage;
-        } else {
-          errorMessage += error.message;
-        }
-      showNotification(errorMessage, "error");
+      handleError(error);
     }
-  };
-
-  const handleUploadBackup = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const formData = new FormData();
-      formData.append("backup", file);
-
-      try {
-        await settingsService.uploadBackup(formData);
-        showNotification("Backup uploaded successfully!", "success");
-        window.location.reload();
-      } catch (error) {
-        console.error("Error uploading backup:", error);
-        let errorMessage = "Error uploading backup: ";
-        if (error.response && error.response.data) {
-          errorMessage = error.response.data.error || error.response.data.message || errorMessage;
-        } else {
-          errorMessage += error.message;
-        }
-        showNotification(errorMessage, "error");
-      }
-    }
-  };
+  }
 
   const handleAddOption = async () => {
     if (newOption.trim() !== "") {
@@ -108,11 +60,11 @@ function Settings() {
         showNotification("Dropdown option added successfully", "success");
       } catch (error) {
         console.error("Error adding dropdown option:", error);
-        setNotification("Failed to add dropdown option");
-        showNotification("Failed to add dropdown option", "error");
+        handleError(error);
        }
     }
-  };
+  }
+  
 
   const handleDeleteOption = async (optionToDelete) => {
     try {
@@ -121,10 +73,15 @@ function Settings() {
       setDropdownOptions(updatedOptions);
       showNotification("Dropdown option deleted successfully", "success");
     } catch (error) {
-      console.error("Error deleting dropdown option:", error);
-      showNotification("Failed to delete dropdown option", "error");
+      handleError(error);
     }
   }
+
+  const handleSaveAccessToken = () => {
+    localStorage.setItem("access-token", accessToken);
+    showNotification("Access token saved!", "success");
+    window.location.reload();
+  };
 
 
   return (
@@ -180,16 +137,6 @@ function Settings() {
               maxWidth: 400,
             }}
           >
-            {/* <Button disabled nt="contained" component="label" sx={{width: '100%'}}>
-              Upload Backup
-              <input
-                type="file"
-                accept=".json"
-                hidden
-                onChange={handleUploadBackup}
-                ref={backupFileRef}
-              />
-            </Button> */}
           </Box>
         </CardContent>
         <CardActions sx={{ justifyContent: 'flex-start'}}>
