@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "Attendance-app-UI",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "server.js"
+    },
+    {
+      "src": "/student/(.*)",
+      "dest": "Attendance-app-UI/dist/$1"
+    },
+    {
+      "src": "/",
+      "dest": "Attendance-app-UI/dist/index.html"
+    }
+  ]
+}
