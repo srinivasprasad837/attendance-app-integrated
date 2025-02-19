@@ -20,11 +20,13 @@ import {
   CircularProgress
 } from "@mui/material";
 import { NotificationContext } from "../NotificationContext";
+import useErrorHandler from "../hooks/useErrorHandler";
 import SearchIcon from "@mui/icons-material/Search";
 import "./Home.css";
 
 function Home() {
   const { showNotification } = useContext(NotificationContext);
+  const { handleError } = useErrorHandler();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [students, setStudents] = useState([]);
@@ -44,15 +46,7 @@ function Home() {
       const response = await studentService.getStudents();
       setStudents(response);
     } catch (error) {
-      // If there's an error during the API call (e.g., network error), display a generic error message
-      console.error("Error fetching students:", error);
-      let errorMessage = "Failed to fetch students.";
-      if (error.response && error.response.data) {
-        errorMessage = error.response.data.error || error.response.data.message || errorMessage;
-      } else {
-        errorMessage += ` ${error.message}`;
-      }
-      showNotification(errorMessage, "error");
+      handleError(error);
     } finally {
       setIsLoading(false);
     }

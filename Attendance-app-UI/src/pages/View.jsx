@@ -15,12 +15,14 @@ import {
 import studentService from "../services/studentService";
 import { useContext } from "react";
 import { NotificationContext } from "../NotificationContext";
+import useErrorHandler from "../hooks/useErrorHandler";
 import "./View.css";
 
 const maxDate = format(new Date(), "yyyy-MM-dd");
 
 function View() {
   const { showNotification } = useContext(NotificationContext);
+  const { handleError } = useErrorHandler();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [students, setStudents] = useState([]);
@@ -36,14 +38,7 @@ function View() {
         const response = await studentService.getStudents(format(selectedDate, "yyyy-MM-dd"));
         setStudents(response);
       } catch (error) {
-        console.error("Error fetching students:", error);
-        let errorMessage = "Failed to fetch students.";
-        if (error.response && error.response.data) {
-          errorMessage = error.response.data.error || error.response.data.message || errorMessage;
-        } else {
-          errorMessage += ` ${error.message}`;
-        }
-        showNotification(errorMessage, "error");
+        handleError(error);
       } finally {
         setIsLoading(false)
       }
