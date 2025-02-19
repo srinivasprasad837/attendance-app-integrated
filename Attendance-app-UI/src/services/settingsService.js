@@ -37,10 +37,37 @@ const deleteDropdownOption = async (optionToDelete) => {
   }
 };
 
+const downloadBackup = async () => {
+  try {
+    const response = await axios.get(`${config.baseURL}/student/attendance/backup`, {
+      responseType: "blob",
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const uploadBackup = async (formData) => {
+  try {
+    const response = await axios.post(`${config.baseURL}/student/attendance/backup`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 export default {
   getDropdownOptions,
   updateDropdownOptions,
   addDropdownOption,
   deleteDropdownOption,
+  downloadBackup,
+  uploadBackup,
 };
+

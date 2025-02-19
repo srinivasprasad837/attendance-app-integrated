@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useContext } from "react";
-import { TextField, Button, Box, Typography, Card, CardContent, CardActions, List, ListItem, IconButton } from "@mui/material";
+import { TextField, Button, Box, Typography, Card, CardContent, CardActions, List, ListItem, IconButton, CircularProgress } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -9,7 +9,8 @@ import settingsService from "../services/settingsService";
 import "./Settings.css";
 
 function Settings() {
-  const { setNotification, setOpen, setSeverity } = useContext(NotificationContext);
+  const { showNotification } = useContext(NotificationContext);
+  const [isLoading, setIsLoading] = useState(false);
   const [telegramBotToken, setTelegramBotToken] = useState("");
   const [telegramChatId, setTelegramChatId] = useState("");
   const [accessToken, setAccessToken] = useState("");
@@ -22,22 +23,21 @@ function Settings() {
   }, []);
 
   const fetchDropdownOptions = async () => {
+    setIsLoading(true)
     try {
       const response = await settingsService.getDropdownOptions()
       setDropdownOptions(response);
     } catch (error) {
       console.error("Error fetching dropdown options:", error);
-      setNotification("Failed to load dropdown options");
-      setOpen(true);
-      setSeverity("error");
+      showNotification("Failed to load dropdown options", "error");
+    } finally {
+      setIsLoading(false)
     }
   };
 
   const handleSaveAccessToken = () => {
     localStorage.setItem("access-token", accessToken);
-    setOpen(true);
-    setSeverity("success");
-    setNotification("Access token saved!");
+    showNotification("Access token saved!", "success");
     window.location.reload();
   };
 
@@ -47,20 +47,13 @@ function Settings() {
       chatId: telegramChatId,
     };
     localStorage.setItem("telegramConfig", JSON.stringify(config));
-    setOpen(true);
-    setSeverity("success");
-    setNotification("Telegram configuration saved!");
+    showNotification("Telegram configuration saved!", "success");
     window.location.reload();
   };
 
   const handleDownloadBackup = async () => {
     try {
-      const response = await axios.get(
-        `${config.baseURL}/student/attendance/backup`,
-        {
-          responseType: "blob",
-        }
-      );
+      const response = await settingsService.downloadBackup();
 
       const url = URL.createObjectURL(response.data);
       const a = document.createElement("a");
@@ -75,12 +68,10 @@ function Settings() {
       let errorMessage = "Error downloading backup: ";
       if (error.response && error.response.data) {
         errorMessage = error.response.data.error || error.response.data.message || errorMessage;
-      } else {
-        errorMessage += error.message;
+        } else {
+          errorMessage += error.message;
         }
-      setOpen(true);
-      setSeverity("error");
-      setNotification(errorMessage);
+      showNotification(errorMessage, "error");
     }
   };
 
@@ -91,18 +82,8 @@ function Settings() {
       formData.append("backup", file);
 
       try {
-        await axios.post(
-          `${config.baseURL}/student/attendance/backup`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        setOpen(true);
-        setSeverity("success");
-        setNotification("Backup uploaded successfully!");
+        await settingsService.uploadBackup(formData);
+        showNotification("Backup uploaded successfully!", "success");
         window.location.reload();
       } catch (error) {
         console.error("Error uploading backup:", error);
@@ -112,9 +93,7 @@ function Settings() {
         } else {
           errorMessage += error.message;
         }
-        setOpen(true);
-        setSeverity("error");
-        setNotification(errorMessage);
+        showNotification(errorMessage, "error");
       }
     }
   };
@@ -126,14 +105,11 @@ function Settings() {
         const updatedOptions = await settingsService.getDropdownOptions();
         setDropdownOptions(updatedOptions);
         setNewOption("");
-        setNotification("Dropdown option added successfully");
-        setOpen(true);
-        setSeverity("success");
+        showNotification("Dropdown option added successfully", "success");
       } catch (error) {
         console.error("Error adding dropdown option:", error);
         setNotification("Failed to add dropdown option");
-        setOpen(true);
-        setSeverity("error");
+        showNotification("Failed to add dropdown option", "error");
        }
     }
   };
@@ -143,14 +119,10 @@ function Settings() {
       await settingsService.deleteDropdownOption(optionToDelete);
       const updatedOptions = await settingsService.getDropdownOptions();
       setDropdownOptions(updatedOptions);
-      setNotification("Dropdown option deleted successfully");
-      setOpen(true);
-      setSeverity("success");
+      showNotification("Dropdown option deleted successfully", "success");
     } catch (error) {
       console.error("Error deleting dropdown option:", error);
-      setNotification("Failed to delete dropdown option");
-      setOpen(true);
-      setSeverity("error");
+      showNotification("Failed to delete dropdown option", "error");
     }
   }
 
@@ -158,7 +130,11 @@ function Settings() {
   return (
     <div className="settings-container">
       <h1>Settings</h1>
-
+      {isLoading && (
+                <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
+                  <CircularProgress />
+                </Box>
+              )}
       <Card sx={{ mb: 4 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>

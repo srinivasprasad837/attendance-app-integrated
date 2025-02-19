@@ -1,9 +1,12 @@
-import React, { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import { Alert } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import { NotificationContext } from "../NotificationContext";
 
-function Notification({ notification, open, setOpen, severity }) {
+function Notification() {
+
+  const { open, setOpen, severity, notification } = useContext(NotificationContext);
   useEffect(() => {
     if (open) {
       const timer = setTimeout(() => {
@@ -12,7 +15,7 @@ function Notification({ notification, open, setOpen, severity }) {
 
       return () => clearTimeout(timer);
     }
-  }, [open, setOpen]);
+  }, [open]);
 
   const handleClose = () => {
     setOpen(false);

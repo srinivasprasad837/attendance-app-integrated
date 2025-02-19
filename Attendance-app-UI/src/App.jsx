@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import Home from "./pages/Home";
 import View from "./pages/View";
 import Manage from "./pages/Manage";
 import Settings from "./pages/Settings";
-import { NotificationContext } from "./NotificationContext";
+import { NotificationProvider } from "./NotificationContext";
 import Notification from "./components/Notification";
 import SchoolRounded from '@mui/icons-material/SchoolRounded';
 
@@ -30,12 +30,10 @@ const StyledLink = styled(Link)({
 });
 
 function App() {
-  const [notification, setNotification] = useState("");
-  const [open, setOpen] = useState(false);
-  const [severity, setSeverity] = useState("success");
-
+  
   return (
     <ThemeProvider theme={theme}>
+     <NotificationProvider>
       <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
@@ -61,15 +59,7 @@ function App() {
         </AppBar>
         <div>
           <Container maxWidth="lg" sx={{ mt: 4, padding: { xs: 2, md: 3 } }}>
-          <Notification 
-            notification={notification}
-            open={open}
-            setOpen={setOpen}
-            severity={severity}
-          />
-            <NotificationContext.Provider
-              value={{ setNotification, setOpen, setSeverity }}
-            >
+          <Notification />
               <Routes>
                 <Route path="/" element={<Home baseURL={config.baseURL} />} />
                 <Route path="/view" element={<View baseURL={config.baseURL} />} />
@@ -79,9 +69,9 @@ function App() {
                 />
                 <Route path="/settings" element={<Settings />} />
               </Routes>
-            </NotificationContext.Provider>
           </Container>
         </div>
+      </NotificationProvider>
     </ThemeProvider>
   );
 }

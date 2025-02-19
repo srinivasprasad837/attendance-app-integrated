@@ -9,9 +9,10 @@ import {
   TableHead,
   TableRow,
   Paper,
+  CircularProgress,
+  Box
 } from "@mui/material";
-import axios from "axios";
-import config from "../config";
+import studentService from "../services/studentService";
 import { useContext } from "react";
 import { NotificationContext } from "../NotificationContext";
 import "./View.css";
@@ -19,7 +20,8 @@ import "./View.css";
 const maxDate = format(new Date(), "yyyy-MM-dd");
 
 function View() {
-  const { setNotification, setOpen, setSeverity } = useContext(NotificationContext);
+  const { showNotification } = useContext(NotificationContext);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [students, setStudents] = useState([]);
 
@@ -29,14 +31,10 @@ function View() {
 
   useEffect(() => {
     const fetchStudents = async () => {
+      setIsLoading(true)
       try {
-        const response = await axios.post(
-          `${config.baseURL}/student/attendance/date`,
-          {
-            date: format(selectedDate, "yyyy-MM-dd"),
-          }
-        );
-        setStudents(response.data);
+        const response = await studentService.getStudents(format(selectedDate, "yyyy-MM-dd"));
+        setStudents(response);
       } catch (error) {
         console.error("Error fetching students:", error);
         let errorMessage = "Failed to fetch students.";
@@ -45,17 +43,22 @@ function View() {
         } else {
           errorMessage += ` ${error.message}`;
         }
-        setNotification(errorMessage);
-        setOpen(true);
-        setSeverity("error");
+        showNotification(errorMessage, "error");
+      } finally {
+        setIsLoading(false)
       }
     };
     fetchStudents();
-  }, [selectedDate, setNotification, setOpen, setSeverity]);
+  }, [selectedDate]);
 
   return (
     <div className="view-container">
       <h1>View Attendance</h1>
+      {isLoading && (
+                <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
+                  <CircularProgress />
+                </Box>
+              )}
       <TextField
         type="date"
         value={format(selectedDate, "yyyy-MM-dd")}

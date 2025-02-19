@@ -34,7 +34,7 @@ import "./Manage.css";
 import settingsService from "../services/settingsService";
 
 function Manage() {
-  const { setNotification, setOpen, setSeverity } =
+  const { showNotification } =
     useContext(NotificationContext);
   const [studentId, setStudentId] = useState("");
   const [name, setName] = useState("");
@@ -75,9 +75,7 @@ function Manage() {
       setDropdownOptions(response);
     } catch (error) {
       console.error("Error fetching dropdown options:", error);
-      setNotification("Failed to load dropdown options");
-      setOpen(true);
-      setSeverity("error");
+      showNotification("Failed to load dropdown options", "error");
     }
   };
 
@@ -175,9 +173,7 @@ function Manage() {
       } else {
         errorMessage += ` ${error.message}`;
       }
-      setNotification(errorMessage);
-      setOpen(true);
-      setSeverity("error");
+      showNotification(errorMessage, "error");
     } finally {
       setIsLoading(false);
     }
@@ -187,9 +183,7 @@ function Manage() {
     setIsLoading(true);
     try {
       await studentService.deleteStudent(studentId);
-      setNotification("Student deleted successfully");
-      setOpen(true);
-      setSeverity("success");
+      showNotification("Student deleted successfully", "success");
       fetchStudents();
     } catch (error) {
       console.error("Error deleting student:", error);
@@ -199,9 +193,7 @@ function Manage() {
       } else {
         errorMessage += `: ${error.message}`;
       }
-      setNotification(errorMessage);
-      setOpen(true);
-      setSeverity("error");
+      showNotification(errorMessage, "error");
     } finally {
       setIsLoading(false);
     }
@@ -217,9 +209,7 @@ function Manage() {
         selectedClass,
         lastPaidDate,
       });
-      setNotification("Student updated successfully");
-      setOpen(true);
-      setSeverity("success");
+      showNotification("Student updated successfully", "success");
       clearFields();
       fetchStudents();
       setIsEditing(false);
@@ -232,9 +222,7 @@ function Manage() {
       } else {
         errorMessage += `: ${error.message}`;
       }
-      setNotification(errorMessage);
-      setOpen(true);
-      setSeverity("error");
+      showNotification(errorMessage, "error");
     } finally {
       setIsLoading(false);
     }
@@ -250,14 +238,10 @@ function Manage() {
         selectedClass,
       });
       if (response.status !== 201) {
-        setNotification(response.data.error || "Error adding student");
-        setOpen(true);
-        setSeverity("error");
+        showNotification(response.data.error || "Error adding student", "error");
         return;
       }
-      setNotification("Student added successfully");
-      setOpen(true);
-      setSeverity("success");
+      showNotification("Student added successfully", "success");
       clearFields();
       fetchStudents();
     } catch (error) {
@@ -268,9 +252,7 @@ function Manage() {
       } else {
         errorMessage += ` ${error.message}`;
       }
-      setNotification(errorMessage);
-      setOpen(true);
-      setSeverity("error");
+      showNotification(errorMessage, "error");
     } finally {
       setIsLoading(false);
     }
