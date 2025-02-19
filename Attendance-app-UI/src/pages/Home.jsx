@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { format } from "date-fns";
-import axios from "axios";
-import config from "../config";
+import studentService from "../services/studentService";
 
 import {
   TextField,
@@ -18,15 +17,15 @@ import {
   Paper,
   Container,
   InputAdornment,
+  CircularProgress
 } from "@mui/material";
 import { NotificationContext } from "../NotificationContext";
 import SearchIcon from "@mui/icons-material/Search";
 import "./Home.css";
 
 function Home() {
-  const { setNotification, setOpen, setSeverity } = useContext(
-    NotificationContext
-  );
+  const { showNotification } = useContext(NotificationContext);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [students, setStudents] = useState([]);
 
@@ -40,24 +39,10 @@ function Home() {
   const studentsPerPage = 5;
 
   const fetchStudents = async () => {
+    setIsLoading(true);
     try {
-      const response = await axios.post(
-        `${config.baseURL}/student/attendance/date`, {
-          validateStatus: function (status) {
-            return status >= 200 && status < 300; // Resolve only if the status code is in the 200s
-          }
-        }
-      );
-
-      if (response.status !== 200) {
-        // If the API call fails, extract the error message from the response
-        setNotification(response.data.error || "Failed to fetch students");
-        setOpen(true);
-        setSeverity("error");
-        return;
-      }
-
-      setStudents(response.data);
+      const response = await studentService.getStudents();
+      setStudents(response);
     } catch (error) {
       // If there's an error during the API call (e.g., network error), display a generic error message
       console.error("Error fetching students:", error);
@@ -67,9 +52,9 @@ function Home() {
       } else {
         errorMessage += ` ${error.message}`;
       }
-      setNotification(errorMessage);
-      setOpen(true);
-      setSeverity("error");
+      showNotification(errorMessage, "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -111,20 +96,13 @@ function Home() {
 
   const handleMarkAttendance = async () => {
     if (selectedStudentIds.length === 0) {
-      alert("Please select at least one student.");
+      showNotification("Please select at least one student.","warning");
       return;
     }
-
     const formattedDate = selectedDate;
-
-    const response = await axios.post(
-      `${config.baseURL}/student/attendance`,
-      { date: formattedDate, Ids: selectedStudentIds }
-    );
+    const response = await studentService.markAttendance(formattedDate, selectedStudentIds);
     if (response.status === 201) {
-      setOpen(true);
-      setNotification("Attendance for selected students marked successfully!");
-      setSeverity("success");
+      showNotification("Attendance for selected students marked successfully!");
     }
     setSelectedStudentIds([]);
     fetchStudents();
@@ -157,7 +135,11 @@ function Home() {
           Mark Attendance
         </Button>
       </Container>
-
+              {isLoading && (
+                <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
+                  <CircularProgress />
+                </Box>
+              )}
       <TextField
         label="Search students..."
         variant="outlined"
