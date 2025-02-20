@@ -26,7 +26,10 @@ function SnackbarNotification() {
       variant="filled"
       severity={severity}
       sx={{
-        margin: 2,
+        top: 100,
+        left: 75,
+        right: 75,
+        position: 'fixed',
         zIndex: 9999,
       }}
       action={
