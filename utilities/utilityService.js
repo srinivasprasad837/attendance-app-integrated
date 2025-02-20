@@ -1,3 +1,5 @@
+const dotenv = require("dotenv");
+dotenv.config();
 // Access token from environment variables or use a default value
 const VALID_ACCESS_TOKEN = process.env.VALID_ACCESS_TOKEN;
 // const VALID_ACCESS_TOKEN = '1234567890';
