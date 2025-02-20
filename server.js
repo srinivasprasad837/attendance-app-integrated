@@ -5,6 +5,7 @@ const cors = require("cors");
 const path = require("path"); // Import the path module
 const studentRoutes = require("./routers/student");
 const settingsRouter =require("./routers/settings");
+const sseService = require('./services/sseService');
 
 dotenv.config();
 
@@ -34,6 +35,28 @@ app.get("/", (req, res) => {
   res.status(301).redirect("/student/");
 });
 
+// SSE endpoint
+app.get('/sse', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  const clientId = Date.now();
+  const newClient = {
+    id: clientId,
+    res,
+  };
+  sseService.addClient(newClient);
+
+  console.log(`${clientId} Connection open`);
+
+  req.on('close', () => {
+    console.log(`${clientId} Connection closed`);
+    sseService.removeClient(clientId);
+  });
+});
+
 // Use the student routes
 app.use(studentRoutes);
 // Use the settings routes
@@ -41,4 +64,9 @@ app.use(settingsRouter);
 
 app.listen(port, () => {
   console.log("App listening on port:", port);
+
+  // Send heartbeat events every 15 seconds
+  setInterval(() => {
+    sseService.broadcastNotification({ type: 'heartbeat' });
+  }, 15000); // 15 seconds
 });

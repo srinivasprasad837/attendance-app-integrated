@@ -5,7 +5,8 @@ import View from "./pages/View";
 import Manage from "./pages/Manage";
 import Settings from "./pages/Settings";
 import { NotificationProvider } from "./NotificationContext";
-import Notification from "./components/Notification";
+import SnackbarNotification from "./components/SnackbarNotification";
+import StreakNotification from "./components/StreakNotification";
 import SchoolRounded from '@mui/icons-material/SchoolRounded';
 
 import {
@@ -39,7 +40,7 @@ function App() {
             <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             <StyledLink to="/">Attendance App<SchoolRounded/></StyledLink>
             </Typography>
-            <Box sx={{ display: "flex", gap: 2 }}>
+            <Box sx={{ display: "flex", gap: 2, alignItems: 'center' }}>
               <Breadcrumbs
                 aria-label="breadcrumb"
                 separator="|"
@@ -54,12 +55,13 @@ function App() {
                 <StyledLink to="/manage">Manage Students</StyledLink>
                 <StyledLink to="/settings">Settings</StyledLink>
               </Breadcrumbs>
+              <StreakNotification />
             </Box>
           </Toolbar>
         </AppBar>
         <div>
           <Container maxWidth="lg" sx={{ mt: 4, padding: { xs: 2, md: 3 } }}>
-          <Notification />
+          <SnackbarNotification />
               <Routes>
                 <Route path="/" element={<Home baseURL={config.baseURL} />} />
                 <Route path="/view" element={<View baseURL={config.baseURL} />} />

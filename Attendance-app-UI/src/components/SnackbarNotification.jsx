@@ -4,7 +4,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { NotificationContext } from "../NotificationContext";
 
-function Notification() {
+function SnackbarNotification() {
 
   const { open, setOpen, severity, notification } = useContext(NotificationContext);
   useEffect(() => {
@@ -40,4 +40,4 @@ function Notification() {
   ) : null;
 }
 
-export default Notification;
+export default SnackbarNotification;

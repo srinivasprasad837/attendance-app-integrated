@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Student = require('../models/student');
+const sseService = require('./sseService');
 
 const sendTelegramNotification = async function (message) {
   console.log("Function: sendTelegramNotification");
@@ -33,8 +34,8 @@ const sendTelegramNotification = async function (message) {
 };
 
 // Access token from environment variables or use a default value
-const VALID_ACCESS_TOKEN = process.env.VALID_ACCESS_TOKEN;
-// const VALID_ACCESS_TOKEN = '1234567890';
+// const VALID_ACCESS_TOKEN = process.env.VALID_ACCESS_TOKEN;
+const VALID_ACCESS_TOKEN = '1234567890';
 
 //if access token is not provided in environment variables, console log an error message.
 if (!VALID_ACCESS_TOKEN) {
@@ -199,6 +200,14 @@ const updateAttendance = async (req, res) => {
       if (student.consecutiveCount === 0) {
         student.streakOfFour++;
         sendTelegramNotification(`Student ${student.name} (Id:${student._id}) has a streak of four! call: ${student.phone}`);
+
+        // Send SSE notification using sseService
+        const notificationMessage = {
+          studentId: student._id,
+          studentName: student.name,
+          message: `Student ${student.name} (ID: ${student._id}) has completed a streak!`,
+        };
+        sseService.broadcastNotification(notificationMessage);
       }
       await student.save();
     }
