@@ -8,6 +8,7 @@
     "dev": "nodemon server.js",
     "dev-build": "cd Attendance-app-UI && npm install && npm run build && cp -r dist/* ../public/ && cd .. && npm run dev",
     "start": "node server.js",
+    "release-build": "cd Attendance-app-UI && npm install && npm run build && cp -r dist/* ../public/ && cd .. && npm install",
     "render-build": "cd Attendance-app-UI && npm install && npm run build && cp -r dist/* ../public/ && cd .. && npm install",
     "vercel-build": "cd Attendance-app-UI && npm install && npm run build && cd .."
   },
