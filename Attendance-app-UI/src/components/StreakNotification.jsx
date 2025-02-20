@@ -14,7 +14,7 @@ function StreakNotification() {
   }, [notificationCount]);
 
   useEffect(() => {
-    const eventSource = new EventSource('/sse');
+    const eventSource = new EventSource('/api/v1/sse');
 
     eventSource.onmessage = (event) => {
       try {

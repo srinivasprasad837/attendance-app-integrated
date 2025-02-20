@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const studentService = require("../services/studentService");
+const utilityService = require('../utilities/utilityService');
 
 // Middleware
-const checkAccessToken = studentService.checkAccessToken;
+const checkAccessToken = utilityService.checkAccessToken;
 
 // API base path
 const apiBasePath = "/api/v1/student";
@@ -20,9 +21,17 @@ router.get(
   studentService.getStudentById
 );
 
-router.post(`${apiBasePath}`, [checkAccessToken], studentService.createStudent);
+router.post(
+  `${apiBasePath}`, 
+  [checkAccessToken], 
+  studentService.createStudent
+);
 
-router.put(`${apiBasePath}/:_id`, [checkAccessToken], studentService.updateStudent);
+router.put(
+  `${apiBasePath}/:_id`, 
+  [checkAccessToken], 
+  studentService.updateStudent
+);
 
 router.delete(
   `${apiBasePath}/:_id`,
