@@ -2,13 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import { IconButton, Badge, Menu, MenuItem, Typography } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { NotificationContext } from '../NotificationContext';
+import notificationService from '../services/notificationService'; // Import notification service
 
 function StreakNotification() {
   const [anchorEl, setAnchorEl] = useState(null);
   const { notifications, notificationCount, addNotification, clearNotifications } = useContext(NotificationContext);
   const [unreadCount, setUnreadCount] = useState(notificationCount);
   const open = Boolean(anchorEl);
-
   useEffect(() => {
     setUnreadCount(notificationCount);
   }, [notificationCount]);
@@ -16,12 +16,11 @@ function StreakNotification() {
   useEffect(() => {
     const eventSource = new EventSource('/api/v1/sse');
 
-    eventSource.onmessage = (event) => {
+    eventSource.onmessage = async (event) => { // Changed to async
       try {
         const notificationData = JSON.parse(event.data);
         // Check if it's a streak notification (has studentName)
         if (notificationData.studentName) {
-          console.log(notificationData.studentName)
           addNotification(notificationData);
         }
       } catch (error) {
@@ -37,17 +36,22 @@ function StreakNotification() {
     return () => {
       eventSource.close();
     };
-  }, [addNotification]);
+  }, []);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
-    
   };
 
-  const handleClose = () => {
+  const handleClose = async () => { // Changed to async
     setAnchorEl(null);
     clearNotifications();
     setUnreadCount(0);
+    try {
+      await notificationService.acknowledgeNotification(); // Use notification service
+      console.log('Notification acknowledged to backend');
+    } catch (error) {
+      console.error('Error acknowledging notification:', error);
+    }
   };
 
   return (

@@ -35,4 +35,11 @@ router.get(
     }
 );
 
+// Acknowledgement endpoint
+router.post(`${apiBasePath}/acknowledge`, async (req, res) => {
+    sseService.acknowledgeNotification();
+    res.status(200).send({ message: 'Notification acknowledged' });
+});
+
+
 module.exports = router;
