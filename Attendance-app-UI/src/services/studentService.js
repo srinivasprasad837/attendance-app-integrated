@@ -13,7 +13,7 @@ const getStudents = async (date) => {
 const markAttendance = async (date, Ids) => {
   try {
     const response = await axios.post(`${config.baseURL}/student/attendance`, { date, Ids });
-    return response.data;
+    return response;
   } catch (error) {
     throw error;
   }
