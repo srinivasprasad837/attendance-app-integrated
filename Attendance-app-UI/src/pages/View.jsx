@@ -17,6 +17,7 @@ import { useContext } from "react";
 import { NotificationContext } from "../NotificationContext";
 import useErrorHandler from "../hooks/useErrorHandler";
 import "./View.css";
+import { Button } from "@mui/material";
 
 const maxDate = format(new Date(), "yyyy-MM-dd");
 
@@ -27,22 +28,48 @@ function View() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [students, setStudents] = useState([]);
 
-  const handleDateChange = (event) =>{
+  const handleDateChange = (event) => {
     setSelectedDate(new Date(event.target.value));
   };
 
+  const handleUndoAttendance = async (studentId, date) => {
+    setIsLoading(true);
+    try {
+      const updatedStudent = await studentService.removeAttendance(
+        studentId,
+        format(date, "yyyy-MM-dd")
+      );
+      if (updatedStudent && updatedStudent.student) {
+        setStudents((prevStudents) =>
+          prevStudents.map((student) =>
+            student._id === studentId ? updatedStudent.student : student
+          )
+        );
+            showNotification("Attendance removed successfully");
+            fetchStudents(); // Reload student list after undo
+          } else {
+            showNotification("Error removing attendance");
+          }
+        } catch (error) {
+          handleError(error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      const fetchStudents = async () => {
+        setIsLoading(true)
+        try {
+          const response = await studentService.getStudents(format(selectedDate, "yyyy-MM-dd"));
+          setStudents(response);
+        } catch (error) {
+          handleError(error);
+        } finally {
+          setIsLoading(false)
+        }
+      };
+
   useEffect(() => {
-    const fetchStudents = async () => {
-      setIsLoading(true)
-      try {
-        const response = await studentService.getStudents(format(selectedDate, "yyyy-MM-dd"));
-        setStudents(response);
-      } catch (error) {
-        handleError(error);
-      } finally {
-        setIsLoading(false)
-      }
-    };
     fetchStudents();
   }, [selectedDate]);
 
@@ -78,6 +105,7 @@ function View() {
                 <TableCell>Total Attendance</TableCell>
                 <TableCell>Consecutive Classes</TableCell>
                 <TableCell>Streak Of 4</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -89,6 +117,18 @@ function View() {
                     <TableCell>{record.total}</TableCell>
                     <TableCell>{record.consecutiveCount}</TableCell>
                     <TableCell>{record.streakOfFour}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        size="small"
+                        onClick={() =>
+                          handleUndoAttendance(record._id, selectedDate)
+                        }
+                      >
+                        Undo
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 );
               })}
