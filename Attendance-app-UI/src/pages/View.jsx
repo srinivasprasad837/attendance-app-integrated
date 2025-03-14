@@ -40,11 +40,6 @@ function View() {
         format(date, "yyyy-MM-dd")
       );
       if (updatedStudent && updatedStudent.student) {
-        setStudents((prevStudents) =>
-          prevStudents.map((student) =>
-            student._id === studentId ? updatedStudent.student : student
-          )
-        );
             showNotification("Attendance removed successfully");
             fetchStudents(); // Reload student list after undo
           } else {
