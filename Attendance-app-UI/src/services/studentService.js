@@ -45,10 +45,20 @@ const deleteStudent = async (_id) => {
   }
 };
 
+const removeAttendance = async (_id, date) => {
+  try {
+    const response = await axios.delete(`${config.baseURL}/student/attendance/${_id}/${date}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export default {
   getStudents,
   markAttendance,
   addStudent,
   updateStudent,
   deleteStudent,
+  removeAttendance,
 };

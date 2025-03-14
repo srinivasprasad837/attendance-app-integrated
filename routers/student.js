@@ -52,6 +52,12 @@ router.delete(
 );
 
 router.delete(
+  `${apiBasePath}/attendance/:_id/:date`,
+  [checkAccessToken],
+  studentService.removeAttendanceByDate
+);
+
+router.delete(
   `${apiBasePath}`,
   [checkAccessToken],
   studentService.deleteAllStudents

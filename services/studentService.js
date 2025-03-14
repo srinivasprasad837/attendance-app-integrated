@@ -254,6 +254,41 @@ const getBackupData = async (req, res) => {
   }
 };
 
+const removeAttendanceByDate = async (req, res) => {
+  console.log("Endpoint: DELETE /attendance/:_id/:date");
+  try {
+    const studentId = req.params._id;
+    const dateToRemove = req.params.date;
+
+    console.log("Student ID:", studentId);
+    console.log("Date to remove:", dateToRemove);
+
+    const student = await Student.findOne({ _id: studentId });
+    if (!student) {
+      console.log("Student not found");
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    // Remove the date from the dates array
+    student.dates = student.dates.filter(date => date !== dateToRemove);
+
+    // Recalculate total attendance, streakOfFour, and consecutiveCount
+    student.total = student.dates.length;
+    student.streakOfFour = Math.floor(student.total / 4);
+    student.consecutiveCount = student.total % 4;
+
+
+    await student.save();
+
+    console.log("Attendance removed successfully.");
+    res.status(200).json({ message: "Attendance removed successfully", student });
+
+  } catch (error) {
+    console.error("Error removing attendance by date:", error);
+    return res.status(500).json({ error: "Failed to remove attendance." });
+  }
+};
+
 module.exports = {
   sendTelegramNotification,
   checkAccessToken,
@@ -266,4 +301,5 @@ module.exports = {
   resetAttendance,
   deleteAllStudents,
   getBackupData,
+  removeAttendanceByDate,
 };
